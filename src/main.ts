@@ -1,12 +1,21 @@
+import { Board } from './Board'
+import { FigureOrder } from './FigureOrder'
 import { Graphics } from './Graphics'
+import { Piece } from './Pieces'
+import {ROWS, COLS, BLOCKSIZE} from './constants'
 import './style.css'
 
 function main() {
-  const graphics = new Graphics("game")
-  graphics.drawSquare({x: 0,y:0}, "blue")
-  graphics.drawRectangle({x:0,y:60}, "red")
+    const canvas = document.querySelector<HTMLCanvasElement>(`#game`)!
+    canvas.width = COLS*BLOCKSIZE
+    canvas.height = ROWS*BLOCKSIZE
+    const board = new Board(new Graphics(canvas))
+    const piece = new Piece(3)
 
-  
+    
+    
+    const figureOrder = new FigureOrder()
+    
 }
 
 main()
