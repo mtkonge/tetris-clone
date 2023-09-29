@@ -1,9 +1,8 @@
 export class Piece {
-    private shape: number[][] = []
+    public shape: number[][] = []
 
     constructor(gridSize: number) {
         this.shape = this.emptyShape(gridSize)
-        console.log(this.shape)
     }
 
     emptyShape(gridSize: number) {
@@ -11,9 +10,15 @@ export class Piece {
     }
 }
 
-class I extends Piece {
+export class I extends Piece {
     constructor() {
         super(4)
+        this.generatePiece()
+    }
+
+    generatePiece() {
+        for(let i = 0; i < this.shape.length; i++)
+            this.shape[i][1] = 1
     }
 }
 

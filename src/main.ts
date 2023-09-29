@@ -1,7 +1,7 @@
 import { Board } from './Board'
 import { FigureOrder } from './FigureOrder'
 import { Graphics } from './Graphics'
-import { Piece } from './Pieces'
+import { I } from './Pieces'
 import {ROWS, COLS, BLOCKSIZE} from './constants'
 import './style.css'
 
@@ -10,7 +10,7 @@ function main() {
     canvas.width = COLS*BLOCKSIZE
     canvas.height = ROWS*BLOCKSIZE
     const board = new Board(new Graphics(canvas))
-    const piece = new Piece(3)
+    const piece = new I()
 
     
     
