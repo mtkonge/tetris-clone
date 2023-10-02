@@ -40,6 +40,7 @@ export class J extends Piece {
         super(3);
         this.color = "#0000FF";
         this.generatePiece();
+        console.log(this.shape);
     }
 
     generatePiece() {

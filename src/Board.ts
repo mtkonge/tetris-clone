@@ -31,17 +31,48 @@ export class Board {
         return emptyGrid;
     }
 
-    setPieceInPos(piece: Piece, pos: Coordinate) {
-        let currentGridPos;
+    trySettingPieceInPos(piece: Piece, pos: Coordinate) {
+        let currentGridPos: Block;
+        let gridClone = [...this.grid];
         for (let i = 0; i < piece.shape.length; i++) {
             for (let j = 0; j < piece.shape[i].length; j++) {
-                currentGridPos = this.grid[pos.x + j][pos.y + i];
-                if (!currentGridPos) continue;
-                currentGridPos.value = piece.shape[i][j].value;
-                currentGridPos.color = piece.shape[i][j].color;
+                currentGridPos = gridClone[pos.x + j][pos.y + i];
+
+                if (
+                    !currentGridPos &&
+                    piece.shape[i][j].value === BlockType.Empty
+                ) {
+                    continue;
+                }
+
+                if (piece.shape[i][j].value === BlockType.Using) {
+                    if (!currentGridPos) {
+                        this.grid = this.ObstructPiece(piece, pos);
+                        return false;
+                    }
+                    currentGridPos.value = piece.shape[i][j].value;
+                    currentGridPos.color = piece.shape[i][j].color;
+                }
             }
         }
+        this.grid = gridClone;
+        return true;
     }
+
+    ObstructPiece(piece: Piece, pos: Coordinate): Block[][] {
+        let currentGridPos: Block;
+        let gridClone = [...this.grid];
+        for (let i = 0; i < piece.shape.length; i++) {
+            for (let j = 0; j < piece.shape[i].length; j++) {
+                currentGridPos = gridClone[pos.x + j][pos.y + i];
+                if (!currentGridPos) continue;
+                if (currentGridPos.value === BlockType.Using)
+                    currentGridPos.value = BlockType.Obstructed;
+            }
+        }
+        return gridClone;
+    }
+
     removePieceInPos(piece: Piece, pos: Coordinate) {
         let currentGridPos;
         for (let i = 0; i < piece.shape.length; i++) {
@@ -55,8 +86,11 @@ export class Board {
         }
     }
 
-    movePiece(piece: Piece, from: Coordinate, to: Coordinate) {
-        this.removePieceInPos(piece, from);
-        this.setPieceInPos(piece, to);
+    movePieceIfNotObstructed(piece: Piece, from: Coordinate, to: Coordinate) {
+        if (this.trySettingPieceInPos(piece, to)) {
+            this.removePieceInPos(piece, from);
+            return true;
+        }
+        return false;
     }
 }
