@@ -1,20 +1,22 @@
 import { Graphics } from "./Graphics";
-import { BLOCKSIZE, COLS, ROWS } from "./constants";
+import { Block } from "./block";
+import { COLS, ROWS } from "./constants";
 
 export class Board {
-    private grid: number[][];
+    private grid: Block[][];
     constructor(private graphics: Graphics) {
         this.grid = this.getEmptyBoard();
         console.table(this.grid);
-        graphics.drawFigureI({ x: 0, y: 0 });
-        graphics.drawFigureL({ x: BLOCKSIZE, y: 0 });
-        graphics.drawFigureO({ x: BLOCKSIZE * 2, y: 0 });
-        graphics.drawFigureJ({ x: BLOCKSIZE * 3, y: 0 });
-        graphics.drawFigureS({ x: 0, y: BLOCKSIZE * 3 });
-        graphics.drawFigureZ({ x: 0, y: BLOCKSIZE * 5 });
+        this.graphics.drawBoard(this.grid);
     }
 
-    getEmptyBoard() {
-        return Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+    getEmptyBoard(): Block[][] {
+        const emptyGrid = Array.from({ length: ROWS }, () => Array(COLS));
+        for (let i = 0; i < emptyGrid.length; i++) {
+            for (let j = 0; j < emptyGrid[i].length; j++) {
+                emptyGrid[i][j] = { value: 0, color: "" };
+            }
+        }
+        return emptyGrid;
     }
 }
