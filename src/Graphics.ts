@@ -1,6 +1,6 @@
 import { Coordinate } from "./Coordinate";
 import { Piece } from "./Pieces";
-import { Block } from "./block";
+import { Block, BlockType } from "./Block";
 import "./constants";
 import { BLOCKSIZE } from "./constants";
 
@@ -34,7 +34,10 @@ export class Graphics {
     drawPiece(piece: Piece, pos: Coordinate) {
         for (let i = 0; i < piece.shape.length; i++) {
             for (let j = 0; j < piece.shape[i].length; j++) {
-                if (piece.shape[i][j].value === 1) {
+                if (
+                    piece.shape[i][j].value === BlockType.Using ||
+                    piece.shape[i][j].value === BlockType.Obstructed
+                ) {
                     this.drawSquare(
                         { x: pos.x + j * BLOCKSIZE, y: pos.y + i * BLOCKSIZE },
                         piece.shape[i][j].color,
@@ -46,7 +49,10 @@ export class Graphics {
     drawBoard(board: Block[][]) {
         for (let i = 0; i < board.length; i++) {
             for (let j = 0; j < board[i].length; j++) {
-                if (board[i][j].value === 1) {
+                if (
+                    board[i][j].value === BlockType.Using ||
+                    board[i][j].value === BlockType.Obstructed
+                ) {
                     this.drawSquare(
                         { x: BLOCKSIZE * i, y: BLOCKSIZE * j },
                         board[i][j].color,
