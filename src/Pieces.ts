@@ -60,11 +60,11 @@ export class L extends Piece {
     }
     generatePiece() {
         for (let i = 0; i < this.shape.length; i++) {
-            this.shape[1][i].value = BlockType.Using;
-            this.shape[1][i].color = this.color;
+            this.shape[0][i].value = BlockType.Using;
+            this.shape[0][i].color = this.color;
         }
-        this.shape[2][0].color = this.color;
-        this.shape[2][0].value = BlockType.Using;
+        this.shape[1][0].color = this.color;
+        this.shape[1][0].value = BlockType.Using;
     }
 }
 
@@ -90,10 +90,10 @@ export class S extends Piece {
     }
     generatePiece() {
         for (let i = 0; i < 2; i++) {
-            this.shape[1][i + 1].value = BlockType.Using;
-            this.shape[1][i + 1].color = this.color;
-            this.shape[2][i].value = BlockType.Using;
-            this.shape[2][i].color = this.color;
+            this.shape[0][i + 1].value = BlockType.Using;
+            this.shape[0][i + 1].color = this.color;
+            this.shape[1][i].value = BlockType.Using;
+            this.shape[1][i].color = this.color;
         }
     }
 }
@@ -105,10 +105,10 @@ export class Z extends Piece {
     }
     generatePiece() {
         for (let i = 0; i < 2; i++) {
-            this.shape[1][i].value = BlockType.Using;
-            this.shape[1][i].color = this.color;
-            this.shape[2][i + 1].value = BlockType.Using;
-            this.shape[2][i + 1].color = this.color;
+            this.shape[0][i].value = BlockType.Using;
+            this.shape[0][i].color = this.color;
+            this.shape[1][i + 1].value = BlockType.Using;
+            this.shape[1][i + 1].color = this.color;
         }
     }
 }

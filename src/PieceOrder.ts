@@ -31,7 +31,7 @@ export class PieceOrder {
     }
 
     next() {
-        this.pieces.splice(0, 1);
+        this.order.shift();
         if (this.order.length <= 7) {
             this.generateOrder();
         }

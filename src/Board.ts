@@ -3,6 +3,7 @@ import { Graphics } from "./Graphics";
 import { Piece } from "./Pieces";
 import { Block, BlockType } from "./Block";
 import { COLS, ROWS } from "./constants";
+import { Direction } from "./Direction";
 
 export class Board {
     private grid: Block[][];
@@ -48,6 +49,26 @@ export class Board {
             }
         }
         return false;
+    }
+
+    directionToPosition(pos: Coordinate, direction: Direction) {
+        let result: Coordinate = pos;
+        if (direction === Direction.Down)
+            result = {
+                x: pos.x,
+                y: pos.y + 1,
+            };
+        else if (direction === Direction.Left)
+            result = {
+                x: pos.x - 1,
+                y: pos.y,
+            };
+        else if (direction === Direction.Right)
+            result = {
+                x: pos.x + 1,
+                y: pos.y,
+            };
+        return result;
     }
 
     setPieceInPos(piece: Piece, pos: Coordinate) {

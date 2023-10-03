@@ -6,7 +6,7 @@ function main() {
     const canvas = document.querySelector<HTMLCanvasElement>(`#game`)!;
     canvas.width = COLS * BLOCKSIZE;
     canvas.height = ROWS * BLOCKSIZE;
-    const game = new Game(canvas);
+    new Game(canvas);
 }
 
 main();

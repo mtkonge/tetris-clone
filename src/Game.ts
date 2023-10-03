@@ -24,18 +24,19 @@ export class Game {
         const deltaTime = currentTime - this.lastTime;
 
         if (deltaTime >= this.interval) {
-            this.gameIteration(deltaTime);
+            this.gameIteration();
             this.lastTime = currentTime - (deltaTime % this.interval);
         }
 
         requestAnimationFrame(this.update.bind(this));
     }
-    gameIteration(deltaTime: number) {
-        const nextPosition = {
+    gameIteration() {
+        const newPosition = {
             x: this.currentPiecePos.x,
             y: this.currentPiecePos.y + 1,
         };
-        if (this.board.isObstructed(this.pieceOrder.order[0], nextPosition)) {
+
+        if (this.board.isObstructed(this.pieceOrder.order[0], newPosition)) {
             this.board.obstructPiece(
                 this.pieceOrder.order[0],
                 this.currentPiecePos,
@@ -53,7 +54,7 @@ export class Game {
             this.board.movePiece(
                 this.pieceOrder.order[0],
                 this.currentPiecePos,
-                nextPosition,
+                newPosition,
             );
             this.currentPiecePos.y++;
         }
