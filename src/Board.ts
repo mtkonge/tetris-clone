@@ -31,7 +31,26 @@ export class Board {
         return emptyGrid;
     }
 
-    trySettingPieceInPos(piece: Piece, pos: Coordinate) {
+    isObstructed(piece: Piece, pos: Coordinate) {
+        let currentGridPos: Block;
+        let gridClone = [...this.grid];
+        for (let i = 0; i < piece.shape.length; i++) {
+            for (let j = 0; j < piece.shape[i].length; j++) {
+                currentGridPos = gridClone[pos.x + j][pos.y + i];
+                if (piece.shape[i][j].value === BlockType.Using) {
+                    if (
+                        !currentGridPos ||
+                        currentGridPos.value === BlockType.Obstructed
+                    ) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    setPieceInPos(piece: Piece, pos: Coordinate) {
         let currentGridPos: Block;
         let gridClone = [...this.grid];
         for (let i = 0; i < piece.shape.length; i++) {
@@ -46,20 +65,15 @@ export class Board {
                 }
 
                 if (piece.shape[i][j].value === BlockType.Using) {
-                    if (!currentGridPos) {
-                        this.grid = this.ObstructPiece(piece, pos);
-                        return false;
-                    }
                     currentGridPos.value = piece.shape[i][j].value;
                     currentGridPos.color = piece.shape[i][j].color;
                 }
             }
         }
         this.grid = gridClone;
-        return true;
     }
 
-    ObstructPiece(piece: Piece, pos: Coordinate): Block[][] {
+    obstructPiece(piece: Piece, pos: Coordinate): Block[][] {
         let currentGridPos: Block;
         let gridClone = [...this.grid];
         for (let i = 0; i < piece.shape.length; i++) {
@@ -78,7 +92,7 @@ export class Board {
         for (let i = 0; i < piece.shape.length; i++) {
             for (let j = 0; j < piece.shape[i].length; j++) {
                 currentGridPos = this.grid[pos.x + j][pos.y + i];
-                if (piece.shape[i][j].value == BlockType.Using) {
+                if (piece.shape[i][j].value === BlockType.Using) {
                     currentGridPos.value = BlockType.Empty;
                     currentGridPos.color = "";
                 }
@@ -86,11 +100,8 @@ export class Board {
         }
     }
 
-    movePieceIfNotObstructed(piece: Piece, from: Coordinate, to: Coordinate) {
-        if (this.trySettingPieceInPos(piece, to)) {
-            this.removePieceInPos(piece, from);
-            return true;
-        }
-        return false;
+    movePiece(piece: Piece, from: Coordinate, to: Coordinate) {
+        this.removePieceInPos(piece, from);
+        this.setPieceInPos(piece, to);
     }
 }
