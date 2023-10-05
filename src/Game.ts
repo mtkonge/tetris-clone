@@ -1,7 +1,7 @@
 import { Board } from "./Board";
 import { Coordinate } from "./Coordinate";
 import { Graphics } from "./Graphics";
-import { PieceOrder } from "./PieceOrder";
+import { PieceQueue } from "./PieceQueue";
 
 export class Game {
     private fps: number;
@@ -10,7 +10,7 @@ export class Game {
     private board: Board;
     private PieceStartPos: Coordinate = { x: 3, y: 0 };
     private currentPiecePos: Coordinate;
-    private pieceOrder: PieceOrder = new PieceOrder();
+    private pieceOrder: PieceQueue = new PieceQueue();
     constructor(canvas: HTMLCanvasElement) {
         this.currentPiecePos = { ...this.PieceStartPos };
         this.board = new Board(new Graphics(canvas));
@@ -36,9 +36,9 @@ export class Game {
             y: this.currentPiecePos.y + 1,
         };
 
-        if (this.board.isObstructed(this.pieceOrder.order[0], newPosition)) {
+        if (this.board.isObstructed(this.pieceOrder.queue[0], newPosition)) {
             this.board.obstructPiece(
-                this.pieceOrder.order[0],
+                this.pieceOrder.queue[0],
                 this.currentPiecePos,
             ),
                 (this.currentPiecePos = {
@@ -47,12 +47,12 @@ export class Game {
                 });
             this.pieceOrder.next();
             this.board.setPieceInPos(
-                this.pieceOrder.order[0],
+                this.pieceOrder.queue[0],
                 this.currentPiecePos,
             );
         } else {
             this.board.movePiece(
-                this.pieceOrder.order[0],
+                this.pieceOrder.queue[0],
                 this.currentPiecePos,
                 newPosition,
             );
