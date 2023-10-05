@@ -10,7 +10,7 @@ export class Game {
     private board: Board;
     private PieceStartPos: Coordinate = { x: 3, y: 0 };
     private currentPiecePos: Coordinate;
-    private pieceOrder: PieceQueue = new PieceQueue();
+    private pieceQueue: PieceQueue = new PieceQueue();
     constructor(canvas: HTMLCanvasElement) {
         this.currentPiecePos = { ...this.PieceStartPos };
         this.board = new Board(new Graphics(canvas));
@@ -24,35 +24,35 @@ export class Game {
         const deltaTime = currentTime - this.lastTime;
 
         if (deltaTime >= this.interval) {
-            this.gameIteration();
+            this.runGameIteration();
             this.lastTime = currentTime - (deltaTime % this.interval);
         }
 
         requestAnimationFrame(this.update.bind(this));
     }
-    gameIteration() {
+    runGameIteration() {
         const newPosition = {
             x: this.currentPiecePos.x,
             y: this.currentPiecePos.y + 1,
         };
 
-        if (this.board.isObstructed(this.pieceOrder.queue[0], newPosition)) {
+        if (this.board.isObstructed(this.pieceQueue.current(), newPosition)) {
             this.board.obstructPiece(
-                this.pieceOrder.queue[0],
+                this.pieceQueue.current(),
                 this.currentPiecePos,
-            ),
-                (this.currentPiecePos = {
-                    x: this.PieceStartPos.x,
-                    y: this.PieceStartPos.y,
-                });
-            this.pieceOrder.next();
+            );
+            this.currentPiecePos = {
+                x: this.PieceStartPos.x,
+                y: this.PieceStartPos.y,
+            };
+            this.pieceQueue.step();
             this.board.setPieceInPos(
-                this.pieceOrder.queue[0],
+                this.pieceQueue.current(),
                 this.currentPiecePos,
             );
         } else {
             this.board.movePiece(
-                this.pieceOrder.queue[0],
+                this.pieceQueue.current(),
                 this.currentPiecePos,
                 newPosition,
             );
