@@ -1,4 +1,5 @@
 import { Block, BlockType } from "./Block";
+import { Matrix2d } from "./Matrix2d";
 
 export abstract class Piece {
     protected color: string;
@@ -7,20 +8,8 @@ export abstract class Piece {
     protected abstract generatePiece(): void;
 
     constructor(gridSize: number, color: string) {
-        this.shape = this.emptyShape(gridSize);
+        this.shape = new Matrix2d(gridSize, gridSize).grid();
         this.color = color;
-    }
-
-    private emptyShape(gridSize: number): Block[][] {
-        const emptyGrid = Array.from({ length: gridSize }, () =>
-            Array(gridSize),
-        );
-        for (let i = 0; i < emptyGrid.length; i++) {
-            for (let j = 0; j < emptyGrid[i].length; j++) {
-                emptyGrid[i][j] = { value: BlockType.Empty, color: "" };
-            }
-        }
-        return emptyGrid;
     }
 }
 
