@@ -7,15 +7,15 @@ export abstract class Piece {
 
     protected abstract generatePiece(): void;
 
-    constructor(gridSize: number, color: string) {
-        this.shape = new Matrix2d(gridSize, gridSize).grid();
+    constructor(rows: number, cols: number, color: string) {
+        this.shape = new Matrix2d(rows, cols).grid();
         this.color = color;
     }
 }
 
 export class I extends Piece {
     constructor() {
-        super(4, "#00DDFF");
+        super(4, 4, "#00DDFF");
         this.generatePiece();
     }
 
@@ -29,7 +29,7 @@ export class I extends Piece {
 
 export class J extends Piece {
     constructor() {
-        super(3, "#0000FF");
+        super(3, 3, "#0000FF");
         this.generatePiece();
     }
 
@@ -44,7 +44,7 @@ export class J extends Piece {
 }
 export class L extends Piece {
     constructor() {
-        super(3, "#FFAA00");
+        super(3, 3, "#FFAA00");
         this.generatePiece();
     }
     generatePiece() {
@@ -59,7 +59,7 @@ export class L extends Piece {
 
 export class O extends Piece {
     constructor() {
-        super(4, "#DDDD00");
+        super(3, 4, "#DDDD00");
         this.generatePiece();
     }
     generatePiece() {
@@ -74,7 +74,7 @@ export class O extends Piece {
 
 export class S extends Piece {
     constructor() {
-        super(3, "#FF0088");
+        super(3, 3, "#FF0088");
         this.generatePiece();
     }
     generatePiece() {
@@ -89,7 +89,7 @@ export class S extends Piece {
 
 export class Z extends Piece {
     constructor() {
-        super(3, "#00FF00");
+        super(3, 3, "#00FF00");
         this.generatePiece();
     }
     generatePiece() {
@@ -104,7 +104,7 @@ export class Z extends Piece {
 
 export class T extends Piece {
     constructor() {
-        super(3, "#AA00AA");
+        super(3, 3, "#AA00AA");
         this.generatePiece();
     }
     generatePiece() {
