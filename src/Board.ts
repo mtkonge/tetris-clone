@@ -116,4 +116,7 @@ export class Board {
         this.removePieceInPos(piece, from);
         this.setPieceInPos(piece, to);
     }
+    rotatePiece(piece: Piece, pos: Coordinate) {
+        return;
+    }
 }

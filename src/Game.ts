@@ -2,6 +2,7 @@ import { Board } from "./Board";
 import { Coordinate } from "./Coordinate";
 import { Graphics } from "./Graphics";
 import { PieceQueue } from "./PieceQueue";
+import { COLS } from "./constants";
 
 export class Game {
     private fps: number;
@@ -16,8 +17,9 @@ export class Game {
         this.board = new Board(new Graphics(canvas));
         this.fps = 3;
         this.interval = 1000 / this.fps;
-        this.lastTime = 0;
+        this.lastTime = Date.now();
         this.update();
+        this.addKeyboardInputListener();
     }
     private update() {
         const currentTime = Date.now();
@@ -59,5 +61,65 @@ export class Game {
             this.currentPiecePos.y++;
         }
         this.board.draw();
+    }
+    // todo clean this mess up
+    addKeyboardInputListener() {
+        document.addEventListener("keydown", (event: KeyboardEvent) => {
+            let newPosition = this.currentPiecePos;
+            if (event.key === "ArrowDown") {
+                this.lastTime = Date.now();
+                this.runGameIteration();
+            } else if (event.key === "ArrowLeft") {
+                if (this.currentPiecePos.x === 0) return;
+                newPosition = {
+                    x: this.currentPiecePos.x - 1,
+                    y: this.currentPiecePos.y,
+                };
+                if (
+                    this.board.isObstructed(
+                        this.pieceQueue.current(),
+                        newPosition,
+                    )
+                )
+                    return;
+                this.board.movePiece(
+                    this.pieceQueue.current(),
+                    this.currentPiecePos,
+                    newPosition,
+                );
+                this.currentPiecePos = newPosition;
+                this.board.draw();
+            } else if (event.key === "ArrowRight") {
+                if (
+                    this.currentPiecePos.x ===
+                    COLS - this.pieceQueue.current().shape.length
+                )
+                    return;
+                newPosition = {
+                    x: this.currentPiecePos.x + 1,
+                    y: this.currentPiecePos.y,
+                };
+                if (
+                    this.board.isObstructed(
+                        this.pieceQueue.current(),
+                        newPosition,
+                    )
+                )
+                    return;
+
+                this.board.movePiece(
+                    this.pieceQueue.current(),
+                    this.currentPiecePos,
+                    newPosition,
+                );
+                this.currentPiecePos = newPosition;
+                this.board.draw();
+            } else if (event.key === "ArrowUp") {
+                this.board.rotatePiece(
+                    this.pieceQueue.current(),
+                    this.currentPiecePos,
+                );
+            }
+        });
     }
 }
