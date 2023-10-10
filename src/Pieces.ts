@@ -18,28 +18,16 @@ export abstract class Piece {
         };
         for (let i = 0; i < this.shape.length; i++) {
             for (let j = 0; j < this.shape[i].length; j++) {
-                const originPos = {
-                    x: j - center.x,
-                    y: i - center.y,
-                };
-                const originAfterRotation = {
-                    x: -originPos.y,
-                    y: originPos.x,
-                };
                 const posAfterRotation = {
-                    x: originAfterRotation.x + center.x,
-                    y: originAfterRotation.y + center.y,
+                    x: -(i - center.x) + center.x,
+                    y: j - center.y + center.y,
                 };
+
                 shapeClone[posAfterRotation.y][posAfterRotation.x] =
                     this.shape[i][j];
             }
         }
         this.shape = shapeClone;
-    }
-    private printShape(shape: Block[][]) {
-        for (let i = 0; i < shape.length; i++) {
-            console.log(shape[i]);
-        }
     }
 
     constructor(rows: number, cols: number, color: string) {
@@ -84,11 +72,11 @@ export class L extends Piece {
     }
     generatePiece() {
         for (let i = 0; i < this.shape.length; i++) {
-            this.shape[0][i].value = BlockType.Using;
-            this.shape[0][i].color = this.color;
+            this.shape[1][i].value = BlockType.Using;
+            this.shape[1][i].color = this.color;
         }
-        this.shape[1][0].color = this.color;
-        this.shape[1][0].value = BlockType.Using;
+        this.shape[0][2].color = this.color;
+        this.shape[0][2].value = BlockType.Using;
     }
 }
 

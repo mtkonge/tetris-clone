@@ -42,7 +42,7 @@ export class Board {
         for (let i = 0; i < piece.shape.length; i++) {
             for (let j = 0; j < piece.shape[i].length; j++) {
                 currentGridPos = this.getGridPosition(
-                    { x: pos.x + i, y: pos.y + j },
+                    { x: pos.x + j, y: pos.y + i },
                     gridClone,
                 );
                 if (piece.shape[i][j].value === BlockType.Using) {
@@ -84,7 +84,7 @@ export class Board {
         for (let i = 0; i < piece.shape.length; i++) {
             for (let j = 0; j < piece.shape[i].length; j++) {
                 currentGridPos = this.getGridPosition(
-                    { x: pos.x + i, y: pos.y + j },
+                    { x: pos.x + j, y: pos.y + i },
                     gridClone,
                 );
                 if (
@@ -109,7 +109,7 @@ export class Board {
         for (let i = 0; i < piece.shape.length; i++) {
             for (let j = 0; j < piece.shape[i].length; j++) {
                 currentGridPos = this.getGridPosition(
-                    { x: pos.x + i, y: pos.y + j },
+                    { x: pos.x + j, y: pos.y + i },
                     gridClone,
                 );
 
@@ -126,7 +126,7 @@ export class Board {
         for (let i = 0; i < piece.shape.length; i++) {
             for (let j = 0; j < piece.shape[i].length; j++) {
                 currentGridPos = this.getGridPosition(
-                    { x: pos.x + i, y: pos.y + j },
+                    { x: pos.x + j, y: pos.y + i },
                     this.grid,
                 );
                 if (piece.shape[i][j].value === BlockType.Using) {
@@ -192,7 +192,7 @@ export class Board {
 
     rotatePiece(piece: Piece, pos: Coordinate) {
         if (piece instanceof O) {
-            return;
+            return pos;
         }
         this.removePieceInPos(piece, pos);
         piece.rotate();

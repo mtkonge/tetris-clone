@@ -2,7 +2,6 @@ import { Board } from "./Board";
 import { Coordinate } from "./Coordinate";
 import { Graphics } from "./Graphics";
 import { PieceQueue } from "./PieceQueue";
-import { COLS } from "./constants";
 
 export class Game {
     private fps: number;
@@ -112,7 +111,7 @@ export class Game {
                 this.currentPiecePos = this.board.rotatePiece(
                     this.pieceQueue.current(),
                     this.currentPiecePos,
-                )!; // I don't know why it thinks it can be undefined, maybe max call stack reached exception?
+                );
 
                 this.board.draw();
             }
