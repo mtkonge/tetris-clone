@@ -7,6 +7,41 @@ export abstract class Piece {
 
     protected abstract generatePiece(): void;
 
+    public rotate() {
+        const shapeClone = new Matrix2d(
+            this.shape.length,
+            this.shape.length,
+        ).grid();
+        const center = {
+            x: (this.shape.length - 1) / 2,
+            y: (this.shape.length - 1) / 2,
+        };
+        for (let i = 0; i < this.shape.length; i++) {
+            for (let j = 0; j < this.shape[i].length; j++) {
+                const originPos = {
+                    x: j - center.x,
+                    y: i - center.y,
+                };
+                const originAfterRotation = {
+                    x: -originPos.y,
+                    y: originPos.x,
+                };
+                const posAfterRotation = {
+                    x: originAfterRotation.x + center.x,
+                    y: originAfterRotation.y + center.y,
+                };
+                shapeClone[posAfterRotation.y][posAfterRotation.x] =
+                    this.shape[i][j];
+            }
+        }
+        this.shape = shapeClone;
+    }
+    private printShape(shape: Block[][]) {
+        for (let i = 0; i < shape.length; i++) {
+            console.log(shape[i]);
+        }
+    }
+
     constructor(rows: number, cols: number, color: string) {
         this.shape = new Matrix2d(rows, cols).grid();
         this.color = color;

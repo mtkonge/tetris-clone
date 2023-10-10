@@ -15,7 +15,7 @@ export class Game {
     constructor(canvas: HTMLCanvasElement) {
         this.currentPiecePos = { ...this.PieceStartPos };
         this.board = new Board(new Graphics(canvas));
-        this.fps = 3;
+        this.fps = 1;
         this.interval = 1000 / this.fps;
         this.lastTime = Date.now();
         this.update();
@@ -70,7 +70,6 @@ export class Game {
                 this.lastTime = Date.now();
                 this.runGameIteration();
             } else if (event.key === "ArrowLeft") {
-                if (this.currentPiecePos.x === 0) return;
                 newPosition = {
                     x: this.currentPiecePos.x - 1,
                     y: this.currentPiecePos.y,
@@ -90,11 +89,6 @@ export class Game {
                 this.currentPiecePos = newPosition;
                 this.board.draw();
             } else if (event.key === "ArrowRight") {
-                if (
-                    this.currentPiecePos.x ===
-                    COLS - this.pieceQueue.current().shape.length
-                )
-                    return;
                 newPosition = {
                     x: this.currentPiecePos.x + 1,
                     y: this.currentPiecePos.y,
@@ -115,10 +109,12 @@ export class Game {
                 this.currentPiecePos = newPosition;
                 this.board.draw();
             } else if (event.key === "ArrowUp") {
-                this.board.rotatePiece(
+                this.currentPiecePos = this.board.rotatePiece(
                     this.pieceQueue.current(),
                     this.currentPiecePos,
-                );
+                )!; // I don't know why it thinks it can be undefined, maybe max call stack reached exception?
+
+                this.board.draw();
             }
         });
     }

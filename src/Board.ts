@@ -1,6 +1,6 @@
 import { Coordinate } from "./Coordinate";
 import { Graphics } from "./Graphics";
-import { Piece } from "./Pieces";
+import { O, Piece } from "./Pieces";
 import { Block, BlockType } from "./Block";
 import { COLS, ROWS } from "./constants";
 import { Direction } from "./Direction";
@@ -23,12 +23,28 @@ export class Board {
         this.graphics.drawBoard(this.grid);
     }
 
+    getGridPosition(pos: Coordinate, grid: Block[][]): Block {
+        let gridPos;
+        try {
+            gridPos = grid[pos.x][pos.y];
+            if (!gridPos) {
+                gridPos = { value: BlockType.Obstructed, color: "" };
+            }
+        } catch {
+            gridPos = { value: BlockType.Obstructed, color: "" };
+        }
+        return gridPos;
+    }
+
     isObstructed(piece: Piece, pos: Coordinate) {
         let currentGridPos: Block;
         let gridClone = [...this.grid];
         for (let i = 0; i < piece.shape.length; i++) {
             for (let j = 0; j < piece.shape[i].length; j++) {
-                currentGridPos = gridClone[pos.x + j][pos.y + i];
+                currentGridPos = this.getGridPosition(
+                    { x: pos.x + i, y: pos.y + j },
+                    gridClone,
+                );
                 if (piece.shape[i][j].value === BlockType.Using) {
                     if (
                         !currentGridPos ||
@@ -67,8 +83,10 @@ export class Board {
         let gridClone = [...this.grid];
         for (let i = 0; i < piece.shape.length; i++) {
             for (let j = 0; j < piece.shape[i].length; j++) {
-                currentGridPos = gridClone[pos.x + j][pos.y + i];
-
+                currentGridPos = this.getGridPosition(
+                    { x: pos.x + i, y: pos.y + j },
+                    gridClone,
+                );
                 if (
                     !currentGridPos &&
                     piece.shape[i][j].value === BlockType.Empty
@@ -90,7 +108,11 @@ export class Board {
         let gridClone = [...this.grid];
         for (let i = 0; i < piece.shape.length; i++) {
             for (let j = 0; j < piece.shape[i].length; j++) {
-                currentGridPos = gridClone[pos.x + j][pos.y + i];
+                currentGridPos = this.getGridPosition(
+                    { x: pos.x + i, y: pos.y + j },
+                    gridClone,
+                );
+
                 if (!currentGridPos) continue;
                 if (currentGridPos.value === BlockType.Using)
                     currentGridPos.value = BlockType.Obstructed;
@@ -103,7 +125,10 @@ export class Board {
         let currentGridPos;
         for (let i = 0; i < piece.shape.length; i++) {
             for (let j = 0; j < piece.shape[i].length; j++) {
-                currentGridPos = this.grid[pos.x + j][pos.y + i];
+                currentGridPos = this.getGridPosition(
+                    { x: pos.x + i, y: pos.y + j },
+                    this.grid,
+                );
                 if (piece.shape[i][j].value === BlockType.Using) {
                     currentGridPos.value = BlockType.Empty;
                     currentGridPos.color = "";
@@ -116,7 +141,63 @@ export class Board {
         this.removePieceInPos(piece, from);
         this.setPieceInPos(piece, to);
     }
+
+    getRotatedPiecePos(piece: Piece, pos: Coordinate): Coordinate {
+        let currentGridPos;
+        currentGridPos = this.getGridPosition(pos, this.grid);
+        for (let i = 0; i < piece.shape.length; i++) {
+            currentGridPos = this.getGridPosition(
+                { x: pos.x, y: pos.y + i },
+                this.grid,
+            );
+            if (currentGridPos.value === BlockType.Obstructed) {
+                return this.getRotatedPiecePos(piece, {
+                    x: pos.x + 1,
+                    y: pos.y,
+                });
+            }
+            currentGridPos = this.getGridPosition(
+                { x: pos.x + piece.shape.length - 1, y: pos.y + i },
+                this.grid,
+            );
+            if (currentGridPos.value === BlockType.Obstructed) {
+                return this.getRotatedPiecePos(piece, {
+                    x: pos.x - 1,
+                    y: pos.y,
+                });
+            }
+            currentGridPos = this.getGridPosition(
+                { x: pos.x + i, y: pos.y },
+                this.grid,
+            );
+            if (currentGridPos.value === BlockType.Obstructed) {
+                return this.getRotatedPiecePos(piece, {
+                    x: pos.x,
+                    y: pos.y + 1,
+                });
+            }
+            currentGridPos = this.getGridPosition(
+                { x: pos.x + i, y: pos.y + piece.shape.length - 1 },
+                this.grid,
+            );
+            if (currentGridPos.value === BlockType.Obstructed) {
+                return this.getRotatedPiecePos(piece, {
+                    x: pos.x,
+                    y: pos.y - 1,
+                });
+            }
+        }
+        return pos;
+    }
+
     rotatePiece(piece: Piece, pos: Coordinate) {
-        return;
+        if (piece instanceof O) {
+            return;
+        }
+        this.removePieceInPos(piece, pos);
+        piece.rotate();
+        const newPiecePos = this.getRotatedPiecePos(piece, pos);
+        this.setPieceInPos(piece, newPiecePos);
+        return newPiecePos;
     }
 }
