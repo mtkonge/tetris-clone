@@ -17,6 +17,11 @@ export class Game {
         this.fps = 1;
         this.interval = 1000 / this.fps;
         this.lastTime = Date.now();
+        this.board.setPieceInPos(
+            this.pieceQueue.current(),
+            this.currentPiecePos,
+        );
+        this.board.draw();
         this.update();
         this.addKeyboardInputListener();
     }

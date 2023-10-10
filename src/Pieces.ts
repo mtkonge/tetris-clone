@@ -87,10 +87,10 @@ export class O extends Piece {
     }
     generatePiece() {
         for (let i = 1; i < 3; i++) {
+            this.shape[0][i].value = BlockType.Using;
+            this.shape[0][i].color = this.color;
             this.shape[1][i].value = BlockType.Using;
             this.shape[1][i].color = this.color;
-            this.shape[2][i].value = BlockType.Using;
-            this.shape[2][i].color = this.color;
         }
     }
 }
