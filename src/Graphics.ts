@@ -32,15 +32,15 @@ export class Graphics {
     }
 
     drawPiece(piece: Piece, pos: Coordinate) {
-        for (let i = 0; i < piece.shape.length; i++) {
-            for (let j = 0; j < piece.shape[i].length; j++) {
+        for (let i = 0; i < piece.currentShape().length; i++) {
+            for (let j = 0; j < piece.currentShape()[i].length; j++) {
                 if (
-                    piece.shape[i][j].value === BlockType.Using ||
-                    piece.shape[i][j].value === BlockType.Obstructed
+                    piece.currentShape()[i][j].value === BlockType.Using ||
+                    piece.currentShape()[i][j].value === BlockType.Obstructed
                 ) {
                     this.drawSquare(
                         { x: pos.x + j * BLOCKSIZE, y: pos.y + i * BLOCKSIZE },
-                        piece.shape[i][j].color,
+                        piece.currentShape()[i][j].color,
                     );
                 }
             }
