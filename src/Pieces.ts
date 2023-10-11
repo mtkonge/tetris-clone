@@ -16,9 +16,11 @@ export abstract class Piece {
     nextRotationClockwise() {
         this.shapes.push(this.shapes.shift()!);
     }
+
     nextRotationAntiClockwise() {
         this.shapes.unshift(this.shapes.pop()!);
     }
+
     public currentShape() {
         return this.shapes[0];
     }
