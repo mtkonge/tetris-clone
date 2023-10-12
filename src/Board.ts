@@ -1,10 +1,15 @@
 import { Coordinate } from "./Coordinate";
 import { Graphics } from "./Graphics";
-import { O, Piece } from "./Pieces";
+import { I, J, L, O, Piece, S, T, Z } from "./Pieces";
 import { Block, BlockType } from "./Block";
-import { COLS, ROWS } from "./constants";
-import { Direction } from "./Direction";
+import { COLS, ROWS, WALLKICKS } from "./constants";
+import { RotationDirection } from "./RotationDirection";
 import { Matrix2d } from "./Matrix2d";
+
+interface PieceAndPos {
+    piece_: Piece;
+    pos: Coordinate;
+}
 
 export class Board {
     private grid: Block[][];
@@ -45,37 +50,15 @@ export class Board {
                     { x: pos.x + j, y: pos.y + i },
                     gridClone,
                 );
-                if (piece.currentShape()[i][j].value === BlockType.Using) {
-                    if (
-                        !currentGridPos ||
-                        currentGridPos.value === BlockType.Obstructed
-                    ) {
-                        return true;
-                    }
+                if (
+                    piece.currentShape()[i][j].value === BlockType.Using &&
+                    currentGridPos.value === BlockType.Obstructed
+                ) {
+                    return true;
                 }
             }
         }
         return false;
-    }
-
-    directionToPosition(pos: Coordinate, direction: Direction) {
-        let result: Coordinate = pos;
-        if (direction === Direction.Down)
-            result = {
-                x: pos.x,
-                y: pos.y + 1,
-            };
-        else if (direction === Direction.Left)
-            result = {
-                x: pos.x - 1,
-                y: pos.y,
-            };
-        else if (direction === Direction.Right)
-            result = {
-                x: pos.x + 1,
-                y: pos.y,
-            };
-        return result;
     }
 
     setPieceInPos(piece: Piece, pos: Coordinate) {
@@ -87,10 +70,7 @@ export class Board {
                     { x: pos.x + j, y: pos.y + i },
                     gridClone,
                 );
-                if (
-                    !currentGridPos &&
-                    piece.currentShape()[i][j].value === BlockType.Empty
-                ) {
+                if (piece.currentShape()[i][j].value === BlockType.Empty) {
                     continue;
                 }
 
@@ -142,52 +122,77 @@ export class Board {
         this.setPieceInPos(piece, to);
     }
 
-    getRotatedPiecePos(piece: Piece, pos: Coordinate): Coordinate {
-        let currentGridPos;
-        currentGridPos = this.getGridPosition(pos, this.grid);
-        for (let i = 0; i < piece.currentShape().length; i++) {
-            currentGridPos = this.getGridPosition(
-                { x: pos.x, y: pos.y + i },
-                this.grid,
-            );
-            if (currentGridPos.value === BlockType.Obstructed) {
-                return this.getRotatedPiecePos(piece, {
-                    x: pos.x + 1,
-                    y: pos.y,
-                });
-            }
-            currentGridPos = this.getGridPosition(
-                { x: pos.x + piece.currentShape().length - 1, y: pos.y + i },
-                this.grid,
-            );
-            if (currentGridPos.value === BlockType.Obstructed) {
-                return this.getRotatedPiecePos(piece, {
-                    x: pos.x - 1,
-                    y: pos.y,
-                });
-            }
-            currentGridPos = this.getGridPosition(
-                { x: pos.x + i, y: pos.y },
-                this.grid,
-            );
-            if (currentGridPos.value === BlockType.Obstructed) {
-                return this.getRotatedPiecePos(piece, {
-                    x: pos.x,
-                    y: pos.y + 1,
-                });
-            }
-            currentGridPos = this.getGridPosition(
-                { x: pos.x + i, y: pos.y + piece.currentShape().length - 1 },
-                this.grid,
-            );
-            if (currentGridPos.value === BlockType.Obstructed) {
-                return this.getRotatedPiecePos(piece, {
-                    x: pos.x,
-                    y: pos.y - 1,
-                });
+    getPosAndPieceAfterWallKickTests(
+        piece: Piece,
+        pos: Coordinate,
+        direction: RotationDirection,
+        pieceCategory: "JLSTZ" | "I",
+    ) {
+        const rotationIndexBefore = piece.currentRotation();
+        if (direction === RotationDirection.Clockwise) {
+            piece.nextRotationClockwise();
+        } else {
+            piece.nextRotationAntiClockwise();
+        }
+        for (let j = 0; j < WALLKICKS[pieceCategory].length; j++) {
+            if (
+                WALLKICKS[pieceCategory][j].rotation === rotationIndexBefore &&
+                WALLKICKS[pieceCategory][j].direction === direction
+            ) {
+                let newPosition: Coordinate;
+                for (
+                    let k = 0;
+                    k < WALLKICKS[pieceCategory][j].tests.length;
+                    k++
+                ) {
+                    newPosition = {
+                        x: pos.x + WALLKICKS[pieceCategory][j].tests[k].x,
+                        y: pos.y + WALLKICKS[pieceCategory][j].tests[k].y,
+                    };
+                    if (!this.isObstructed(piece, newPosition)) {
+                        return {
+                            pos: newPosition,
+                            piece_: piece,
+                        };
+                    }
+                }
             }
         }
-        return pos;
+        if (direction === RotationDirection.Clockwise) {
+            piece.nextRotationAntiClockwise();
+        } else {
+            piece.nextRotationClockwise();
+        }
+        return { pos: pos, piece_: piece };
+    }
+
+    //todo holy clean up this mess
+    private getRotatedPieceAndPos(
+        piece: Piece,
+        pos: Coordinate,
+        direction: RotationDirection,
+    ): PieceAndPos {
+        const pieces = [J, L, S, T, Z];
+        for (let i = 0; i < pieces.length; i++) {
+            if (piece instanceof pieces[i]) {
+                return this.getPosAndPieceAfterWallKickTests(
+                    piece,
+                    pos,
+                    direction,
+                    "JLSTZ",
+                );
+            }
+        }
+        if (piece instanceof I) {
+            return this.getPosAndPieceAfterWallKickTests(
+                piece,
+                pos,
+                direction,
+                "I",
+            );
+        }
+
+        return { pos: pos, piece_: piece };
     }
 
     rotatePiece(piece: Piece, pos: Coordinate) {
@@ -195,9 +200,12 @@ export class Board {
             return pos;
         }
         this.removePieceInPos(piece, pos);
-        piece.nextRotationClockwise();
-        const newPiecePos = this.getRotatedPiecePos(piece, pos);
-        this.setPieceInPos(piece, newPiecePos);
-        return newPiecePos;
+        const newPieceAndPos = this.getRotatedPieceAndPos(
+            piece,
+            pos,
+            RotationDirection.Clockwise,
+        );
+        this.setPieceInPos(newPieceAndPos.piece_, newPieceAndPos.pos);
+        return newPieceAndPos.pos;
     }
 }

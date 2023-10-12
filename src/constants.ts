@@ -1,4 +1,5 @@
 import { Coordinate } from "./Coordinate";
+import { RotationDirection } from "./RotationDirection";
 
 interface WallKickTests {
     JLSTZ: WallKickTest[];
@@ -19,7 +20,7 @@ export const WALLKICKS: WallKickTests = {
     JLSTZ: [
         {
             rotation: 0,
-            direction: -1,
+            direction: RotationDirection.AntiClockwise,
             tests: [
                 {
                     x: 0,
@@ -45,7 +46,7 @@ export const WALLKICKS: WallKickTests = {
         },
         {
             rotation: 0,
-            direction: 1,
+            direction: RotationDirection.Clockwise,
             tests: [
                 {
                     x: 0,
@@ -71,7 +72,7 @@ export const WALLKICKS: WallKickTests = {
         },
         {
             rotation: 1,
-            direction: -1,
+            direction: RotationDirection.AntiClockwise,
             tests: [
                 {
                     x: 0,
@@ -97,7 +98,7 @@ export const WALLKICKS: WallKickTests = {
         },
         {
             rotation: 1,
-            direction: 1,
+            direction: RotationDirection.Clockwise,
             tests: [
                 {
                     x: 0,
@@ -123,7 +124,7 @@ export const WALLKICKS: WallKickTests = {
         },
         {
             rotation: 2,
-            direction: -1,
+            direction: RotationDirection.AntiClockwise,
             tests: [
                 {
                     x: 0,
@@ -149,7 +150,7 @@ export const WALLKICKS: WallKickTests = {
         },
         {
             rotation: 2,
-            direction: 1,
+            direction: RotationDirection.Clockwise,
             tests: [
                 {
                     x: 0,
@@ -175,7 +176,7 @@ export const WALLKICKS: WallKickTests = {
         },
         {
             rotation: 3,
-            direction: -1,
+            direction: RotationDirection.AntiClockwise,
             tests: [
                 {
                     x: 0,
@@ -201,7 +202,7 @@ export const WALLKICKS: WallKickTests = {
         },
         {
             rotation: 3,
-            direction: 1,
+            direction: RotationDirection.Clockwise,
             tests: [
                 {
                     x: 0,
@@ -229,7 +230,7 @@ export const WALLKICKS: WallKickTests = {
     I: [
         {
             rotation: 0,
-            direction: -1,
+            direction: RotationDirection.AntiClockwise,
             tests: [
                 {
                     x: 0,
@@ -255,7 +256,7 @@ export const WALLKICKS: WallKickTests = {
         },
         {
             rotation: 0,
-            direction: 1,
+            direction: RotationDirection.Clockwise,
             tests: [
                 {
                     x: 0,
@@ -281,7 +282,7 @@ export const WALLKICKS: WallKickTests = {
         },
         {
             rotation: 1,
-            direction: -1,
+            direction: RotationDirection.AntiClockwise,
             tests: [
                 {
                     x: 0,
@@ -307,7 +308,7 @@ export const WALLKICKS: WallKickTests = {
         },
         {
             rotation: 1,
-            direction: 1,
+            direction: RotationDirection.Clockwise,
             tests: [
                 {
                     x: 0,
@@ -333,7 +334,7 @@ export const WALLKICKS: WallKickTests = {
         },
         {
             rotation: 2,
-            direction: -1,
+            direction: RotationDirection.AntiClockwise,
             tests: [
                 {
                     x: 0,
@@ -359,7 +360,7 @@ export const WALLKICKS: WallKickTests = {
         },
         {
             rotation: 2,
-            direction: 1,
+            direction: RotationDirection.Clockwise,
             tests: [
                 {
                     x: 0,
@@ -385,7 +386,7 @@ export const WALLKICKS: WallKickTests = {
         },
         {
             rotation: 3,
-            direction: -1,
+            direction: RotationDirection.AntiClockwise,
             tests: [
                 {
                     x: 0,
@@ -411,7 +412,7 @@ export const WALLKICKS: WallKickTests = {
         },
         {
             rotation: 3,
-            direction: 1,
+            direction: RotationDirection.Clockwise,
             tests: [
                 {
                     x: 0,

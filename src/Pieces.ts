@@ -3,7 +3,8 @@ import { Matrix2d } from "./Matrix2d";
 
 export abstract class Piece {
     protected color: string;
-    protected shapes: Block[][][] = [];
+    protected rotations: Block[][][] = [];
+    protected currentRotationIndex = 0;
 
     protected abstract generatePiece(): void;
 
@@ -14,19 +15,30 @@ export abstract class Piece {
     }
 
     nextRotationClockwise() {
-        this.shapes.push(this.shapes.shift()!);
+        if (this.currentRotationIndex === 3) {
+            this.currentRotationIndex = 0;
+        } else {
+            this.currentRotationIndex += 1;
+        }
     }
 
     nextRotationAntiClockwise() {
-        this.shapes.unshift(this.shapes.pop()!);
+        if (this.currentRotationIndex === 0) {
+            this.currentRotationIndex = 3;
+        } else {
+            this.currentRotationIndex -= 1;
+        }
+    }
+    public currentRotation() {
+        return this.currentRotationIndex;
     }
 
     public currentShape() {
-        return this.shapes[0];
+        return this.rotations[this.currentRotationIndex];
     }
 
     private addNewRotationToShapes() {
-        const originalShape = this.shapes[this.shapes.length - 1];
+        const originalShape = this.rotations[this.rotations.length - 1];
         const shapeClone = new Matrix2d(
             originalShape.length,
             originalShape.length,
@@ -46,11 +58,11 @@ export abstract class Piece {
                     originalShape[i][j];
             }
         }
-        this.shapes.push(shapeClone);
+        this.rotations.push(shapeClone);
     }
 
     constructor(rows: number, cols: number, color: string) {
-        this.shapes.push(new Matrix2d(rows, cols).grid());
+        this.rotations.push(new Matrix2d(rows, cols).grid());
         this.color = color;
     }
 }
