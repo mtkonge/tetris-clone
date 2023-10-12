@@ -93,7 +93,6 @@ export class Board {
                     gridClone,
                 );
 
-                if (!currentGridPos) continue;
                 if (currentGridPos.value === BlockType.Using)
                     currentGridPos.value = BlockType.Obstructed;
             }
@@ -120,6 +119,18 @@ export class Board {
     movePiece(piece: Piece, from: Coordinate, to: Coordinate) {
         this.removePieceInPos(piece, from);
         this.setPieceInPos(piece, to);
+    }
+
+    drop(piece: Piece, pos: Coordinate) {
+        let nextPos = { x: pos.x, y: pos.y + 1 };
+        let i = 0;
+        while (!this.isObstructed(piece, nextPos)) {
+            this.movePiece(piece, pos, nextPos);
+            pos.y = nextPos.y;
+            nextPos.y++;
+            i++;
+        }
+        this.obstructPiece(piece, pos);
     }
 
     getPosAndPieceAfterWallKickTests(

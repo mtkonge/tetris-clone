@@ -36,6 +36,7 @@ export class Game {
 
         requestAnimationFrame(this.update.bind(this));
     }
+
     runGameIteration() {
         const newPosition = {
             x: this.currentPiecePos.x,
@@ -43,19 +44,7 @@ export class Game {
         };
 
         if (this.board.isObstructed(this.pieceQueue.current(), newPosition)) {
-            this.board.obstructPiece(
-                this.pieceQueue.current(),
-                this.currentPiecePos,
-            );
-            this.currentPiecePos = {
-                x: this.PieceStartPos.x,
-                y: this.PieceStartPos.y,
-            };
-            this.pieceQueue.step();
-            this.board.setPieceInPos(
-                this.pieceQueue.current(),
-                this.currentPiecePos,
-            );
+            this.nextPiece();
         } else {
             this.board.movePiece(
                 this.pieceQueue.current(),
@@ -65,6 +54,22 @@ export class Game {
             this.currentPiecePos.y++;
         }
         this.board.draw();
+    }
+
+    nextPiece() {
+        this.board.obstructPiece(
+            this.pieceQueue.current(),
+            this.currentPiecePos,
+        );
+        this.currentPiecePos = {
+            x: this.PieceStartPos.x,
+            y: this.PieceStartPos.y,
+        };
+        this.pieceQueue.step();
+        this.board.setPieceInPos(
+            this.pieceQueue.current(),
+            this.currentPiecePos,
+        );
     }
     // todo clean this mess up
     addKeyboardInputListener() {
@@ -117,7 +122,14 @@ export class Game {
                     this.pieceQueue.current(),
                     this.currentPiecePos,
                 );
-
+                this.board.draw();
+            } else if (event.key === " ") {
+                console.log("lets goo");
+                this.board.drop(
+                    this.pieceQueue.current(),
+                    this.currentPiecePos,
+                );
+                this.nextPiece();
                 this.board.draw();
             }
         });
