@@ -29,11 +29,11 @@ export abstract class Piece {
             this.currentRotationIndex -= 1;
         }
     }
-    public currentRotation() {
+    currentRotation() {
         return this.currentRotationIndex;
     }
 
-    public currentShape() {
+    currentShape() {
         return this.rotations[this.currentRotationIndex];
     }
 

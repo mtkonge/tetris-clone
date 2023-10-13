@@ -2,6 +2,7 @@ import { Board } from "./Board";
 import { Coordinate } from "./Coordinate";
 import { Graphics } from "./Graphics";
 import { PieceQueue } from "./PieceQueue";
+import { RotationDirection } from "./RotationDirection";
 
 export class Game {
     private fps: number;
@@ -71,61 +72,41 @@ export class Game {
             this.currentPiecePos,
         );
     }
+
+    moveHorizontal(coordinateXChange: number) {
+        const newPosition = {
+            x: this.currentPiecePos.x + coordinateXChange,
+            y: this.currentPiecePos.y,
+        };
+        if (this.board.isObstructed(this.pieceQueue.current(), newPosition))
+            return;
+        this.board.movePiece(
+            this.pieceQueue.current(),
+            this.currentPiecePos,
+            newPosition,
+        );
+        this.currentPiecePos = newPosition;
+        this.board.draw();
+    }
     // todo clean this mess up
     addKeyboardInputListener() {
         document.addEventListener("keydown", (event: KeyboardEvent) => {
-            let newPosition = this.currentPiecePos;
             if (event.key === "ArrowDown") {
                 this.lastTime = Date.now();
                 this.runGameIteration();
             } else if (event.key === "ArrowLeft") {
-                newPosition = {
-                    x: this.currentPiecePos.x - 1,
-                    y: this.currentPiecePos.y,
-                };
-                if (
-                    this.board.isObstructed(
-                        this.pieceQueue.current(),
-                        newPosition,
-                    )
-                )
-                    return;
-                this.board.movePiece(
-                    this.pieceQueue.current(),
-                    this.currentPiecePos,
-                    newPosition,
-                );
-                this.currentPiecePos = newPosition;
-                this.board.draw();
+                this.moveHorizontal(-1);
             } else if (event.key === "ArrowRight") {
-                newPosition = {
-                    x: this.currentPiecePos.x + 1,
-                    y: this.currentPiecePos.y,
-                };
-                if (
-                    this.board.isObstructed(
-                        this.pieceQueue.current(),
-                        newPosition,
-                    )
-                )
-                    return;
-
-                this.board.movePiece(
-                    this.pieceQueue.current(),
-                    this.currentPiecePos,
-                    newPosition,
-                );
-                this.currentPiecePos = newPosition;
-                this.board.draw();
+                this.moveHorizontal(1);
             } else if (event.key === "ArrowUp") {
                 this.currentPiecePos = this.board.rotatePiece(
                     this.pieceQueue.current(),
                     this.currentPiecePos,
+                    RotationDirection.Clockwise,
                 );
                 this.board.draw();
             } else if (event.key === " ") {
-                console.log("lets goo");
-                this.board.drop(
+                this.board.dropPiece(
                     this.pieceQueue.current(),
                     this.currentPiecePos,
                 );

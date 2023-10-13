@@ -121,7 +121,7 @@ export class Board {
         this.setPieceInPos(piece, to);
     }
 
-    drop(piece: Piece, pos: Coordinate) {
+    dropPiece(piece: Piece, pos: Coordinate) {
         let nextPos = { x: pos.x, y: pos.y + 1 };
         let i = 0;
         while (!this.isObstructed(piece, nextPos)) {
@@ -206,7 +206,7 @@ export class Board {
         return { pos: pos, piece_: piece };
     }
 
-    rotatePiece(piece: Piece, pos: Coordinate) {
+    rotatePiece(piece: Piece, pos: Coordinate, direction: RotationDirection) {
         if (piece instanceof O) {
             return pos;
         }
@@ -214,7 +214,7 @@ export class Board {
         const newPieceAndPos = this.getRotatedPieceAndPos(
             piece,
             pos,
-            RotationDirection.Clockwise,
+            direction,
         );
         this.setPieceInPos(newPieceAndPos.piece_, newPieceAndPos.pos);
         return newPieceAndPos.pos;
