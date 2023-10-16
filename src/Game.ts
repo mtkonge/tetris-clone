@@ -91,6 +91,7 @@ export class Game {
     // todo clean this mess up
     addKeyboardInputListener() {
         document.addEventListener("keydown", (event: KeyboardEvent) => {
+            event.preventDefault();
             if (event.key === "ArrowDown") {
                 this.lastTime = Date.now();
                 this.runGameIteration();
@@ -98,11 +99,19 @@ export class Game {
                 this.moveHorizontal(-1);
             } else if (event.key === "ArrowRight") {
                 this.moveHorizontal(1);
-            } else if (event.key === "ArrowUp") {
+            } else if (event.key === "ArrowUp" || event.key === "x") {
                 this.currentPiecePos = this.board.rotatePiece(
                     this.pieceQueue.current(),
                     this.currentPiecePos,
                     RotationDirection.Clockwise,
+                );
+                this.board.draw();
+            } else if (event.key === "z") {
+                console.log("z");
+                this.currentPiecePos = this.board.rotatePiece(
+                    this.pieceQueue.current(),
+                    this.currentPiecePos,
+                    RotationDirection.AntiClockwise,
                 );
                 this.board.draw();
             } else if (event.key === " ") {
