@@ -177,7 +177,6 @@ export class Board {
         return { pos: pos, piece_: piece };
     }
 
-    //todo holy clean up this mess
     private getRotatedPieceAndPos(
         piece: Piece,
         pos: Coordinate,
