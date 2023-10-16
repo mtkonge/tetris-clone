@@ -1,4 +1,4 @@
 export enum RotationDirection {
     Clockwise,
-    AntiClockwise,
+    CounterClockwise,
 }

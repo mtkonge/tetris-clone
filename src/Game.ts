@@ -111,7 +111,7 @@ export class Game {
                 this.currentPiecePos = this.board.rotatePiece(
                     this.pieceQueue.current(),
                     this.currentPiecePos,
-                    RotationDirection.AntiClockwise,
+                    RotationDirection.CounterClockwise,
                 );
                 this.board.draw();
             } else if (event.key === " ") {
