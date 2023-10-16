@@ -88,7 +88,6 @@ export class Game {
         this.currentPiecePos = newPosition;
         this.board.draw();
     }
-    // todo clean this mess up
     addKeyboardInputListener() {
         document.addEventListener("keydown", (event: KeyboardEvent) => {
             event.preventDefault();
