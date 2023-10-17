@@ -44,7 +44,12 @@ export class Game {
             y: this.currentPiecePos.y + 1,
         };
 
-        if (this.board.isObstructed(this.pieceQueue.current(), newPosition)) {
+        if (
+            this.board.isUsingPieceObstructed(
+                this.pieceQueue.current().currentShape(),
+                newPosition,
+            )
+        ) {
             this.nextPiece();
         } else {
             this.board.movePiece(
@@ -62,6 +67,7 @@ export class Game {
             this.pieceQueue.current(),
             this.currentPiecePos,
         );
+        this.board.clearAndDropLines();
         this.currentPiecePos = {
             x: this.PieceStartPos.x,
             y: this.PieceStartPos.y,
@@ -78,7 +84,12 @@ export class Game {
             x: this.currentPiecePos.x + coordinateXChange,
             y: this.currentPiecePos.y,
         };
-        if (this.board.isObstructed(this.pieceQueue.current(), newPosition))
+        if (
+            this.board.isUsingPieceObstructed(
+                this.pieceQueue.current().currentShape(),
+                newPosition,
+            )
+        )
             return;
         this.board.movePiece(
             this.pieceQueue.current(),
@@ -106,7 +117,6 @@ export class Game {
                 );
                 this.board.draw();
             } else if (event.key === "z") {
-                console.log("z");
                 this.currentPiecePos = this.board.rotatePiece(
                     this.pieceQueue.current(),
                     this.currentPiecePos,

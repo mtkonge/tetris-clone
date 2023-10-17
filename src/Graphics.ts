@@ -1,5 +1,4 @@
 import { Coordinate } from "./Coordinate";
-import { Piece } from "./Pieces";
 import { Block, BlockType } from "./Block";
 import "./constants";
 import { BLOCKSIZE } from "./constants";
@@ -19,43 +18,16 @@ export class Graphics {
         this.context.fillStyle = color;
         this.context.fillRect(pos.x, pos.y, BLOCKSIZE, BLOCKSIZE);
     }
-
-    drawRectangle(pos: Coordinate, color: string) {
-        this.context.fillStyle = color;
-        for (let i = 0; i < 4; i++)
-            this.context.fillRect(
-                pos.x,
-                pos.y + i * BLOCKSIZE,
-                BLOCKSIZE,
-                BLOCKSIZE,
-            );
-    }
-
-    drawPiece(piece: Piece, pos: Coordinate) {
-        for (let i = 0; i < piece.currentShape().length; i++) {
-            for (let j = 0; j < piece.currentShape()[i].length; j++) {
-                if (
-                    piece.currentShape()[i][j].value === BlockType.Using ||
-                    piece.currentShape()[i][j].value === BlockType.Obstructed
-                ) {
-                    this.drawSquare(
-                        { x: pos.x + j * BLOCKSIZE, y: pos.y + i * BLOCKSIZE },
-                        piece.currentShape()[i][j].color,
-                    );
-                }
-            }
-        }
-    }
     drawBoard(board: Block[][]) {
-        for (let i = 0; i < board.length; i++) {
-            for (let j = 0; j < board[i].length; j++) {
+        for (let y = 0; y < board.length; y++) {
+            for (let x = 0; x < board[y].length; x++) {
                 if (
-                    board[i][j].value === BlockType.Using ||
-                    board[i][j].value === BlockType.Obstructed
+                    board[y][x].value === BlockType.Using ||
+                    board[y][x].value === BlockType.Obstructed
                 ) {
                     this.drawSquare(
-                        { x: BLOCKSIZE * i, y: BLOCKSIZE * j },
-                        board[i][j].color,
+                        { x: BLOCKSIZE * x, y: BLOCKSIZE * y },
+                        board[y][x].color,
                     );
                 }
             }
