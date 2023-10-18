@@ -2,12 +2,32 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + TS</title>
+    <title>Miktris</title>
   </head>
   <body>
-    <canvas id="game"></canvas>
+    <div id="main">
+      <div id="left-side" class="panel">
+        <div id="hold-piece">
+          <canvas id="hold"></canvas>
+        </div>
+        <div id="scoreboard">
+          <p>Score</p>
+          <p>0</p>
+          <p>Level</p>
+          <p>1</p>
+          <p>Lines</p>
+          <p>0</p>
+        </div>
+      </div>
+      <canvas id="game"></canvas>
+      <div id="right-side" class="panel">
+        <div id="next-pieces">
+          <canvas id="next"></canvas>
+
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
