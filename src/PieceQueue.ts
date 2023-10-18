@@ -1,6 +1,7 @@
 import { I, J, L, O, Piece, S, T, Z } from "./Pieces";
 
 export class PieceQueue {
+    private holding: Piece | undefined;
     private queue: Piece[] = [];
     constructor() {
         this.generateQueue();
@@ -15,6 +16,13 @@ export class PieceQueue {
             pool.splice(randomIndex, 1);
         }
     }
+
+    switch() {
+        const before = this.holding;
+        this.holding = this.queue.shift();
+        if (before) this.queue.unshift(before);
+    }
+
     step() {
         this.queue.shift();
         if (this.queue.length <= 7) {

@@ -127,7 +127,6 @@ export class Board {
             pos.y = nextPos.y;
             nextPos.y++;
         }
-        this.obstructPiece(piece, pos);
     }
 
     getPosAndPieceAfterWallKickTests(

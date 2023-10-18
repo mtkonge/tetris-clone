@@ -12,6 +12,7 @@ export class Game {
     private PieceStartPos: Coordinate = { x: 3, y: 0 };
     private currentPiecePos: Coordinate;
     private pieceQueue: PieceQueue = new PieceQueue();
+    private hasSwitched = false;
     constructor(canvas: HTMLCanvasElement) {
         this.currentPiecePos = { ...this.PieceStartPos };
         this.board = new Board(new Graphics(canvas));
@@ -68,11 +69,9 @@ export class Game {
             this.currentPiecePos,
         );
         this.board.clearAndDropLines();
-        this.currentPiecePos = {
-            x: this.PieceStartPos.x,
-            y: this.PieceStartPos.y,
-        };
+        this.currentPiecePos = { ...this.PieceStartPos };
         this.pieceQueue.step();
+        this.hasSwitched = false;
         this.board.setPieceInPos(
             this.pieceQueue.current(),
             this.currentPiecePos,
@@ -122,6 +121,20 @@ export class Game {
                     this.currentPiecePos,
                     RotationDirection.CounterClockwise,
                 );
+                this.board.draw();
+            } else if (event.key === "c") {
+                if (this.hasSwitched) return;
+                this.board.removePieceInPos(
+                    this.pieceQueue.current(),
+                    this.currentPiecePos,
+                );
+                this.pieceQueue.switch();
+                this.currentPiecePos = { ...this.PieceStartPos };
+                this.board.setPieceInPos(
+                    this.pieceQueue.current(),
+                    this.currentPiecePos,
+                );
+                this.hasSwitched = true;
                 this.board.draw();
             } else if (event.key === " ") {
                 this.board.dropPiece(
