@@ -1,7 +1,8 @@
 import { Coordinate } from "./Coordinate";
 import { Block, BlockType } from "./Block";
 import "./constants";
-import { BLOCKSIZE } from "./constants";
+import { BLOCKSIZE, graphicalOffsets } from "./constants";
+import { I, O, Piece } from "./Pieces";
 
 export class Graphics {
     private context: CanvasRenderingContext2D;
@@ -26,9 +27,49 @@ export class Graphics {
                     board[y][x].value === BlockType.Obstructed
                 ) {
                     this.drawSquare(
-                        { x: BLOCKSIZE * x, y: BLOCKSIZE * y },
+                        {
+                            x: BLOCKSIZE * x,
+                            y: BLOCKSIZE * y,
+                        },
                         board[y][x].color,
                     );
+                }
+            }
+        }
+    }
+
+    drawPiece(piece: Piece) {
+        for (let y = 0; y < piece.currentShape().length; y++) {
+            for (let x = 0; x < piece.currentShape()[y].length; x++) {
+                if (
+                    piece.currentShape()[y][x].value === BlockType.Using ||
+                    piece.currentShape()[y][x].value === BlockType.Obstructed
+                ) {
+                    if (piece instanceof O) {
+                        this.drawSquare(
+                            {
+                                x: BLOCKSIZE * (x + graphicalOffsets.O.x),
+                                y: BLOCKSIZE * (y + graphicalOffsets.O.y),
+                            },
+                            piece.currentShape()[y][x].color,
+                        );
+                    } else if (piece instanceof I) {
+                        this.drawSquare(
+                            {
+                                x: BLOCKSIZE * (x + graphicalOffsets.I.x),
+                                y: BLOCKSIZE * (y + graphicalOffsets.I.y),
+                            },
+                            piece.currentShape()[y][x].color,
+                        );
+                    } else {
+                        this.drawSquare(
+                            {
+                                x: BLOCKSIZE * (x + graphicalOffsets.JLSTZ.x),
+                                y: BLOCKSIZE * (y + graphicalOffsets.JLSTZ.y),
+                            },
+                            piece.currentShape()[y][x].color,
+                        );
+                    }
                 }
             }
         }

@@ -1,7 +1,7 @@
 import { I, J, L, O, Piece, S, T, Z } from "./Pieces";
 
 export class PieceQueue {
-    private holding: Piece | undefined;
+    private holding_: Piece | undefined;
     private queue: Piece[] = [];
     constructor() {
         this.generateQueue();
@@ -17,9 +17,18 @@ export class PieceQueue {
         }
     }
 
+    holding() {
+        return this.holding_;
+    }
+
     switch() {
-        const before = this.holding;
-        this.holding = this.queue.shift();
+        const before = this.holding_;
+        const after = this.queue.shift()!;
+        [I, J, L, O, S, Z, T].forEach((x) => {
+            if (after instanceof x) {
+                this.holding_ = new x();
+            }
+        });
         if (before) this.queue.unshift(before);
     }
 

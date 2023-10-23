@@ -12,9 +12,21 @@ interface WallKickTest {
     tests: Coordinate[];
 }
 
+interface GraphicalOffsets {
+    JLSTZ: Coordinate;
+    O: Coordinate;
+    I: Coordinate;
+}
+
+export const graphicalOffsets: GraphicalOffsets = {
+    JLSTZ: { x: 1, y: 0.5 },
+    O: { x: 0.5, y: 0.5 },
+    I: { x: 0.5, y: 0 },
+};
+
 export const COLS = 10;
 export const ROWS = 20;
-export const BLOCKSIZE = 25;
+export const BLOCKSIZE = 30;
 
 export const WALLKICKS: WallKickTests = {
     JLSTZ: [

@@ -13,7 +13,7 @@ function main() {
     nextCanvas.width = (4 + 1) * BLOCKSIZE;
     nextCanvas.height = (6 + 2) * BLOCKSIZE;
 
-    new Game(mainCanvas);
+    new Game(mainCanvas, holdCanvas, nextCanvas);
 }
 
 main();

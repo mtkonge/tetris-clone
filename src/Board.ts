@@ -11,53 +11,28 @@ interface PieceAndPos {
     pos: Coordinate;
 }
 
-export class Board {
-    private grid: Block[][];
-    constructor(private graphics: Graphics) {
-        this.grid = new Matrix2d(ROWS, COLS).grid();
+export abstract class Board {
+    protected grid: Block[][];
+    private graphics: Graphics;
+
+    constructor(canvas: HTMLCanvasElement, rows: number, cols: number) {
+        this.graphics = new Graphics(canvas);
+        this.grid = new Matrix2d(rows, cols).grid();
         console.table(this.grid);
         this.draw();
-    }
-
-    consoleTable() {
-        console.table(this.grid);
     }
 
     draw() {
         this.graphics.clear();
         this.graphics.drawBoard(this.grid);
     }
-
-    getGridPosition(pos: Coordinate): Block {
-        let gridPos;
-        try {
-            gridPos = this.grid[pos.y][pos.x];
-            if (!gridPos) {
-                gridPos = { value: BlockType.Obstructed, color: "" };
-            }
-        } catch {
-            gridPos = { value: BlockType.Obstructed, color: "" };
-        }
-        return gridPos;
+    drawPiece(piece: Piece) {
+        this.graphics.clear();
+        this.graphics.drawPiece(piece);
     }
 
-    isUsingPieceObstructed(blocks: Block[][], pos: Coordinate) {
-        let currentGridPos: Block;
-        for (let i = 0; i < blocks.length; i++) {
-            for (let j = 0; j < blocks[i].length; j++) {
-                currentGridPos = this.getGridPosition({
-                    x: pos.x + j,
-                    y: pos.y + i,
-                });
-                if (
-                    blocks[i][j].value === BlockType.Using &&
-                    currentGridPos.value === BlockType.Obstructed
-                ) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    clear() {
+        this.grid = new Matrix2d(this.grid.length, this.grid[0].length).grid();
     }
 
     setPieceInPos(piece: Piece, pos: Coordinate) {
@@ -80,6 +55,44 @@ export class Board {
             }
         }
         this.grid = gridClone;
+    }
+
+    getGridPosition(pos: Coordinate): Block {
+        let gridPos;
+        try {
+            gridPos = this.grid[pos.y][pos.x];
+            if (!gridPos) {
+                gridPos = { value: BlockType.Obstructed, color: "" };
+            }
+        } catch {
+            gridPos = { value: BlockType.Obstructed, color: "" };
+        }
+        return gridPos;
+    }
+}
+
+export class MainBoard extends Board {
+    constructor(canvas: HTMLCanvasElement) {
+        super(canvas, ROWS, COLS);
+    }
+
+    isUsingPieceObstructed(blocks: Block[][], pos: Coordinate) {
+        let currentGridPos: Block;
+        for (let i = 0; i < blocks.length; i++) {
+            for (let j = 0; j < blocks[i].length; j++) {
+                currentGridPos = this.getGridPosition({
+                    x: pos.x + j,
+                    y: pos.y + i,
+                });
+                if (
+                    blocks[i][j].value === BlockType.Using &&
+                    currentGridPos.value === BlockType.Obstructed
+                ) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     obstructPiece(piece: Piece, pos: Coordinate): Block[][] {
@@ -285,5 +298,17 @@ export class Board {
     clearAndDropLines() {
         this.clearFullLines();
         this.dropBoard();
+    }
+}
+
+export class HoldBoard extends Board {
+    constructor(canvas: HTMLCanvasElement) {
+        super(canvas, 3, 5);
+    }
+}
+
+export class NextBoard extends Board {
+    constructor(canvas: HTMLCanvasElement) {
+        super(canvas, 8, 5);
     }
 }

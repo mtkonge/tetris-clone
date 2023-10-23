@@ -1,6 +1,5 @@
-import { Board } from "./Board";
+import { MainBoard, HoldBoard, NextBoard } from "./Board";
 import { Coordinate } from "./Coordinate";
-import { Graphics } from "./Graphics";
 import { PieceQueue } from "./PieceQueue";
 import { RotationDirection } from "./RotationDirection";
 
@@ -8,22 +7,30 @@ export class Game {
     private fps: number;
     private interval: number;
     private lastTime: number;
-    private board: Board;
-    private PieceStartPos: Coordinate = { x: 3, y: 0 };
+    private mainBoard: MainBoard;
+    private holdBoard: HoldBoard;
+    private nextBoard: NextBoard;
+    private pieceStartPos: Coordinate = { x: 3, y: 0 };
     private currentPiecePos: Coordinate;
     private pieceQueue: PieceQueue = new PieceQueue();
     private hasSwitched = false;
-    constructor(canvas: HTMLCanvasElement) {
-        this.currentPiecePos = { ...this.PieceStartPos };
-        this.board = new Board(new Graphics(canvas));
+    constructor(
+        mainCanvas: HTMLCanvasElement,
+        holdCanvas: HTMLCanvasElement,
+        nextCanvas: HTMLCanvasElement,
+    ) {
+        this.currentPiecePos = { ...this.pieceStartPos };
+        this.mainBoard = new MainBoard(mainCanvas);
+        this.holdBoard = new HoldBoard(holdCanvas);
+        this.nextBoard = new NextBoard(nextCanvas);
         this.fps = 1;
         this.interval = 1000 / this.fps;
         this.lastTime = Date.now();
-        this.board.setPieceInPos(
+        this.mainBoard.setPieceInPos(
             this.pieceQueue.current(),
             this.currentPiecePos,
         );
-        this.board.draw();
+        this.mainBoard.draw();
         this.update();
         this.addKeyboardInputListener();
     }
@@ -46,33 +53,33 @@ export class Game {
         };
 
         if (
-            this.board.isUsingPieceObstructed(
+            this.mainBoard.isUsingPieceObstructed(
                 this.pieceQueue.current().currentShape(),
                 newPosition,
             )
         ) {
             this.nextPiece();
         } else {
-            this.board.movePiece(
+            this.mainBoard.movePiece(
                 this.pieceQueue.current(),
                 this.currentPiecePos,
                 newPosition,
             );
             this.currentPiecePos.y++;
         }
-        this.board.draw();
+        this.mainBoard.draw();
     }
 
     nextPiece() {
-        this.board.obstructPiece(
+        this.mainBoard.obstructPiece(
             this.pieceQueue.current(),
             this.currentPiecePos,
         );
-        this.board.clearAndDropLines();
-        this.currentPiecePos = { ...this.PieceStartPos };
+        this.mainBoard.clearAndDropLines();
+        this.currentPiecePos = { ...this.pieceStartPos };
         this.pieceQueue.step();
         this.hasSwitched = false;
-        this.board.setPieceInPos(
+        this.mainBoard.setPieceInPos(
             this.pieceQueue.current(),
             this.currentPiecePos,
         );
@@ -84,19 +91,19 @@ export class Game {
             y: this.currentPiecePos.y,
         };
         if (
-            this.board.isUsingPieceObstructed(
+            this.mainBoard.isUsingPieceObstructed(
                 this.pieceQueue.current().currentShape(),
                 newPosition,
             )
         )
             return;
-        this.board.movePiece(
+        this.mainBoard.movePiece(
             this.pieceQueue.current(),
             this.currentPiecePos,
             newPosition,
         );
         this.currentPiecePos = newPosition;
-        this.board.draw();
+        this.mainBoard.draw();
     }
     addKeyboardInputListener() {
         document.addEventListener("keydown", (event: KeyboardEvent) => {
@@ -109,40 +116,41 @@ export class Game {
             } else if (event.key === "ArrowRight") {
                 this.moveHorizontal(1);
             } else if (event.key === "ArrowUp" || event.key === "x") {
-                this.currentPiecePos = this.board.rotatePiece(
+                this.currentPiecePos = this.mainBoard.rotatePiece(
                     this.pieceQueue.current(),
                     this.currentPiecePos,
                     RotationDirection.Clockwise,
                 );
-                this.board.draw();
+                this.mainBoard.draw();
             } else if (event.key === "z") {
-                this.currentPiecePos = this.board.rotatePiece(
+                this.currentPiecePos = this.mainBoard.rotatePiece(
                     this.pieceQueue.current(),
                     this.currentPiecePos,
                     RotationDirection.CounterClockwise,
                 );
-                this.board.draw();
+                this.mainBoard.draw();
             } else if (event.key === "c") {
                 if (this.hasSwitched) return;
-                this.board.removePieceInPos(
+                this.mainBoard.removePieceInPos(
                     this.pieceQueue.current(),
                     this.currentPiecePos,
                 );
                 this.pieceQueue.switch();
-                this.currentPiecePos = { ...this.PieceStartPos };
-                this.board.setPieceInPos(
+                this.currentPiecePos = { ...this.pieceStartPos };
+                this.mainBoard.setPieceInPos(
                     this.pieceQueue.current(),
                     this.currentPiecePos,
                 );
                 this.hasSwitched = true;
-                this.board.draw();
+                this.mainBoard.draw();
+                this.holdBoard.drawPiece(this.pieceQueue.holding()!);
             } else if (event.key === " ") {
-                this.board.dropPiece(
+                this.mainBoard.dropPiece(
                     this.pieceQueue.current(),
                     this.currentPiecePos,
                 );
                 this.nextPiece();
-                this.board.draw();
+                this.mainBoard.draw();
             }
         });
     }
