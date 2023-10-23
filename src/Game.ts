@@ -4,8 +4,7 @@ import { PieceQueue } from "./PieceQueue";
 import { RotationDirection } from "./RotationDirection";
 
 export class Game {
-    private fps: number;
-    private interval: number;
+    private levelUI = document.querySelector<HTMLParagraphElement>("#level")!;
     private lastTime: number;
     private mainBoard: MainBoard;
     private holdBoard: HoldBoard;
@@ -14,6 +13,12 @@ export class Game {
     private currentPiecePos: Coordinate;
     private pieceQueue: PieceQueue = new PieceQueue();
     private hasSwitched = false;
+    private level: number = 1;
+    private interval: number;
+    private points: number = 0;
+    private milisecondsPassed = Date.now();
+    private milisecondsTilNextLevel = 30000;
+
     constructor(
         mainCanvas: HTMLCanvasElement,
         holdCanvas: HTMLCanvasElement,
@@ -23,17 +28,23 @@ export class Game {
         this.mainBoard = new MainBoard(mainCanvas);
         this.holdBoard = new HoldBoard(holdCanvas);
         this.nextBoard = new NextBoard(nextCanvas);
-        this.fps = 1;
-        this.interval = 1000 / this.fps;
         this.lastTime = Date.now();
         this.mainBoard.setPieceInPos(
             this.pieceQueue.current(),
             this.currentPiecePos,
         );
+        this.interval = Math.round(this.getUpdatedInterval());
         this.mainBoard.draw();
         this.update();
         this.addKeyboardInputListener();
     }
+
+    private getUpdatedInterval() {
+        const interval =
+            1000 / (Math.sqrt(this.level) * 0.7 + 0.25 + this.level * 0.05);
+        return interval;
+    }
+
     private update() {
         const currentTime = Date.now();
         const deltaTime = currentTime - this.lastTime;
@@ -71,6 +82,14 @@ export class Game {
     }
 
     nextPiece() {
+        const currentTime = Date.now();
+        const deltaTime = currentTime - this.milisecondsPassed;
+        if (deltaTime >= this.milisecondsTilNextLevel) {
+            this.level++;
+            this.milisecondsPassed = Date.now();
+        }
+        this.levelUI.innerHTML = this.level.toString();
+        this.interval = this.getUpdatedInterval();
         this.mainBoard.obstructPiece(
             this.pieceQueue.current(),
             this.currentPiecePos,
