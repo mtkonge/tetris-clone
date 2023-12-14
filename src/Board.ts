@@ -21,7 +21,6 @@ export abstract class Board {
         console.table(this.grid);
         this.draw();
     }
-
     draw() {
         this.graphics.clear();
         this.graphics.drawBoard(this.grid);
@@ -35,25 +34,28 @@ export abstract class Board {
         this.grid = new Matrix2d(this.grid.length, this.grid[0].length).grid();
     }
 
+    foreachGridPos(grid: Block[][], fn: (x: number, y: number) => void) {
+        // todo: figure out how to use this for every time you need to go through every block in a Block[][], it will not work for isUsingPieceObstructed because it has a return value
+        for (let y = 0; y < grid.length; y++) {
+            for (let x = 0; x < grid[y].length; x++) {
+                fn(x, y);
+            }
+        }
+    }
+
     setPieceInPos(piece: Piece, pos: Coordinate) {
         let currentGridPos: Block;
         let gridClone = [...this.grid];
-        for (let i = 0; i < piece.currentShape().length; i++) {
-            for (let j = 0; j < piece.currentShape()[i].length; j++) {
-                currentGridPos = this.getGridPosition({
-                    x: pos.x + j,
-                    y: pos.y + i,
-                });
-                if (piece.currentShape()[i][j].value === BlockType.Empty) {
-                    continue;
-                }
-
-                if (piece.currentShape()[i][j].value === BlockType.Using) {
-                    currentGridPos.value = piece.currentShape()[i][j].value;
-                    currentGridPos.color = piece.currentShape()[i][j].color;
-                }
+        this.foreachGridPos(piece.currentShape(), (x, y) => {
+            currentGridPos = this.getGridPosition({
+                x: pos.x + x,
+                y: pos.y + y,
+            });
+            if (piece.currentShape()[y][x].value === BlockType.Using) {
+                currentGridPos.value = piece.currentShape()[y][x].value;
+                currentGridPos.color = piece.currentShape()[y][x].color;
             }
-        }
+        });
         this.grid = gridClone;
     }
 
@@ -135,11 +137,14 @@ export class MainBoard extends Board {
 
     dropPiece(piece: Piece, pos: Coordinate) {
         let nextPos = { x: pos.x, y: pos.y + 1 };
+        let blocksMoved = 0;
         while (!this.isUsingPieceObstructed(piece.currentShape(), nextPos)) {
             this.movePiece(piece, pos, nextPos);
             pos.y = nextPos.y;
             nextPos.y++;
+            blocksMoved++;
         }
+        return blocksMoved;
     }
 
     getPosAndPieceAfterWallKickTests(
@@ -288,16 +293,20 @@ export class MainBoard extends Board {
     }
 
     clearFullLines() {
+        let linesCleared = 0;
         for (let y = 0; y < ROWS; y++) {
             if (this.isFullLine(y)) {
                 this.clearLine(y);
+                linesCleared++;
             }
         }
+        return linesCleared;
     }
 
     clearAndDropLines() {
-        this.clearFullLines();
+        const linesCleared = this.clearFullLines();
         this.dropBoard();
+        return linesCleared;
     }
 }
 

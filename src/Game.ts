@@ -5,6 +5,11 @@ import { RotationDirection } from "./RotationDirection";
 
 export class Game {
     private levelUI = document.querySelector<HTMLParagraphElement>("#level")!;
+    private level: number = 1;
+    private scoreUI = document.querySelector<HTMLParagraphElement>("#score")!;
+    private score: number = 0;
+    private linesUI = document.querySelector<HTMLParagraphElement>("#lines")!;
+    private lines = 0;
     private lastTime: number;
     private mainBoard: MainBoard;
     private holdBoard: HoldBoard;
@@ -13,9 +18,7 @@ export class Game {
     private currentPiecePos: Coordinate;
     private pieceQueue: PieceQueue = new PieceQueue();
     private hasSwitched = false;
-    private level: number = 1;
     private interval: number;
-    private points: number = 0;
     private milisecondsPassed = Date.now();
     private milisecondsTilNextLevel = 30000;
 
@@ -70,6 +73,7 @@ export class Game {
             )
         ) {
             this.nextPiece();
+            this.mainBoard.draw();
         } else {
             this.mainBoard.movePiece(
                 this.pieceQueue.current(),
@@ -77,8 +81,9 @@ export class Game {
                 newPosition,
             );
             this.currentPiecePos.y++;
+            this.mainBoard.draw();
+            return "not obstructed";
         }
-        this.mainBoard.draw();
     }
 
     nextPiece() {
@@ -94,7 +99,9 @@ export class Game {
             this.pieceQueue.current(),
             this.currentPiecePos,
         );
-        this.mainBoard.clearAndDropLines();
+        const linesCleared = this.mainBoard.clearAndDropLines();
+        this.updateScore(Math.round(linesCleared ** 1.5) * 100 * this.level);
+        this.updateLines(linesCleared);
         this.currentPiecePos = { ...this.pieceStartPos };
         this.pieceQueue.step();
         this.hasSwitched = false;
@@ -124,12 +131,24 @@ export class Game {
         this.currentPiecePos = newPosition;
         this.mainBoard.draw();
     }
+
+    updateScore(points: number) {
+        this.score += points;
+        this.scoreUI.innerHTML = this.score.toString();
+    }
+
+    updateLines(lines: number) {
+        this.lines += lines;
+        this.linesUI.innerHTML = this.lines.toString();
+    }
+
     addKeyboardInputListener() {
         document.addEventListener("keydown", (event: KeyboardEvent) => {
             event.preventDefault();
             if (event.key === "ArrowDown") {
                 this.lastTime = Date.now();
-                this.runGameIteration();
+                if (this.runGameIteration() === "not obstructed")
+                    this.updateScore(1);
             } else if (event.key === "ArrowLeft") {
                 this.moveHorizontal(-1);
             } else if (event.key === "ArrowRight") {
@@ -164,10 +183,11 @@ export class Game {
                 this.mainBoard.draw();
                 this.holdBoard.drawPiece(this.pieceQueue.holding()!);
             } else if (event.key === " ") {
-                this.mainBoard.dropPiece(
+                const points = this.mainBoard.dropPiece(
                     this.pieceQueue.current(),
                     this.currentPiecePos,
                 );
+                this.updateScore(points * 2);
                 this.nextPiece();
                 this.mainBoard.draw();
             }
