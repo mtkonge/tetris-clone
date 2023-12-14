@@ -13,7 +13,7 @@ interface PieceAndPos {
 
 export abstract class Board {
     protected grid: Block[][];
-    private graphics: Graphics;
+    protected graphics: Graphics;
 
     constructor(canvas: HTMLCanvasElement, rows: number, cols: number) {
         this.graphics = new Graphics(canvas);
@@ -24,10 +24,6 @@ export abstract class Board {
     draw() {
         this.graphics.clear();
         this.graphics.drawBoard(this.grid);
-    }
-    drawPiece(piece: Piece) {
-        this.graphics.clear();
-        this.graphics.drawPiece(piece);
     }
 
     clear() {
@@ -314,10 +310,19 @@ export class HoldBoard extends Board {
     constructor(canvas: HTMLCanvasElement) {
         super(canvas, 3, 5);
     }
+    drawPiece(piece: Piece) {
+        this.graphics.clear();
+        this.graphics.drawPiece(piece);
+    }
 }
 
 export class NextBoard extends Board {
     constructor(canvas: HTMLCanvasElement) {
         super(canvas, 8, 5);
+    }
+
+    drawPieces(pieces: Piece[]) {
+        this.graphics.clear();
+        this.graphics.drawPieces(pieces);
     }
 }

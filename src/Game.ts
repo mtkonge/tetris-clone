@@ -31,6 +31,7 @@ export class Game {
         this.mainBoard = new MainBoard(mainCanvas);
         this.holdBoard = new HoldBoard(holdCanvas);
         this.nextBoard = new NextBoard(nextCanvas);
+        this.nextBoard.drawPieces(this.pieceQueue.nextThree());
         this.lastTime = Date.now();
         this.mainBoard.setPieceInPos(
             this.pieceQueue.current(),
@@ -44,7 +45,11 @@ export class Game {
 
     private getUpdatedInterval() {
         const interval =
-            1000 / (Math.sqrt(this.level) * 0.7 + 0.25 + this.level * 0.05);
+            1000 /
+            (Math.sqrt(this.level) * 0.7 +
+                0.25 +
+                (this.level * 0.1) ** 2 +
+                0.04);
         return interval;
     }
 
@@ -109,6 +114,7 @@ export class Game {
             this.pieceQueue.current(),
             this.currentPiecePos,
         );
+        this.nextBoard.drawPieces(this.pieceQueue.nextThree());
     }
 
     moveHorizontal(coordinateXChange: number) {

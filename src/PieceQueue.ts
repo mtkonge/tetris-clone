@@ -38,7 +38,12 @@ export class PieceQueue {
             this.generateQueue();
         }
     }
+
     current() {
         return this.queue[0];
+    }
+
+    nextThree() {
+        return this.queue.slice(1, 4);
     }
 }

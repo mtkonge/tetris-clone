@@ -38,7 +38,7 @@ export class Graphics {
         }
     }
 
-    drawPiece(piece: Piece) {
+    drawPiece(piece: Piece, pos: Coordinate = { x: 0, y: 0 }) {
         for (let y = 0; y < piece.currentShape().length; y++) {
             for (let x = 0; x < piece.currentShape()[y].length; x++) {
                 if (
@@ -48,30 +48,49 @@ export class Graphics {
                     if (piece instanceof O) {
                         this.drawSquare(
                             {
-                                x: BLOCKSIZE * (x + graphicalOffsets.O.x),
-                                y: BLOCKSIZE * (y + graphicalOffsets.O.y),
+                                x:
+                                    BLOCKSIZE * (x + graphicalOffsets.O.x) +
+                                    pos.x,
+                                y:
+                                    BLOCKSIZE * (y + graphicalOffsets.O.y) +
+                                    pos.y,
                             },
                             piece.currentShape()[y][x].color,
                         );
                     } else if (piece instanceof I) {
                         this.drawSquare(
                             {
-                                x: BLOCKSIZE * (x + graphicalOffsets.I.x),
-                                y: BLOCKSIZE * (y + graphicalOffsets.I.y),
+                                x:
+                                    BLOCKSIZE * (x + graphicalOffsets.I.x) +
+                                    pos.x,
+                                y:
+                                    BLOCKSIZE * (y + graphicalOffsets.I.y) +
+                                    pos.y,
                             },
                             piece.currentShape()[y][x].color,
                         );
                     } else {
                         this.drawSquare(
                             {
-                                x: BLOCKSIZE * (x + graphicalOffsets.JLSTZ.x),
-                                y: BLOCKSIZE * (y + graphicalOffsets.JLSTZ.y),
+                                x:
+                                    BLOCKSIZE * (x + graphicalOffsets.JLSTZ.x) +
+                                    pos.x,
+                                y:
+                                    BLOCKSIZE * (y + graphicalOffsets.JLSTZ.y) +
+                                    pos.y,
                             },
                             piece.currentShape()[y][x].color,
                         );
                     }
                 }
             }
+        }
+    }
+
+    drawPieces(pieces: Piece[]) {
+        console.log(pieces.length);
+        for (let i = 0; i < pieces.length; i++) {
+            this.drawPiece(pieces[i], { x: 0, y: i * BLOCKSIZE * 3 });
         }
     }
 }

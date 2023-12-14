@@ -11,7 +11,7 @@ function main() {
     holdCanvas.height = (2 + 1) * BLOCKSIZE;
     const nextCanvas = document.querySelector<HTMLCanvasElement>(`#next`)!;
     nextCanvas.width = (4 + 1) * BLOCKSIZE;
-    nextCanvas.height = (6 + 2) * BLOCKSIZE;
+    nextCanvas.height = (6 + 3) * BLOCKSIZE;
 
     new Game(mainCanvas, holdCanvas, nextCanvas);
 }
