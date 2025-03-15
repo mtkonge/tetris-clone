@@ -15,9 +15,35 @@ export class Graphics {
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
-    drawSquare(pos: Coordinate, color: string) {
-        this.context.fillStyle = color;
+    drawHighlightedSquare(pos: Coordinate) {
+        this.context.fillStyle = "white";
         this.context.fillRect(pos.x, pos.y, BLOCKSIZE, BLOCKSIZE);
+        this.context.fillStyle = "grey";
+        this.context.fillRect(
+            pos.x + 2,
+            pos.y + 2,
+            BLOCKSIZE - 4,
+            BLOCKSIZE - 4,
+        );
+        this.context.fillStyle = "white";
+        this.context.fillRect(
+            pos.x + 4,
+            pos.y + 4,
+            BLOCKSIZE - 8,
+            BLOCKSIZE - 8,
+        );
+    }
+
+    drawTetriminoSquare(pos: Coordinate, color: string) {
+        this.context.fillStyle = "white";
+        this.context.fillRect(pos.x, pos.y, BLOCKSIZE, BLOCKSIZE);
+        this.context.fillStyle = color;
+        this.context.fillRect(
+            pos.x + 1,
+            pos.y + 1,
+            BLOCKSIZE - 2,
+            BLOCKSIZE - 2,
+        );
     }
     drawBoard(board: Block[][]) {
         for (let y = 0; y < board.length; y++) {
@@ -26,13 +52,19 @@ export class Graphics {
                     board[y][x].value === BlockType.Using ||
                     board[y][x].value === BlockType.Obstructed
                 ) {
-                    this.drawSquare(
+                    this.drawTetriminoSquare(
                         {
                             x: BLOCKSIZE * x,
                             y: BLOCKSIZE * y,
                         },
                         board[y][x].color,
                     );
+                }
+                if (board[y][x].value === BlockType.Highlighted) {
+                    this.drawHighlightedSquare({
+                        x: BLOCKSIZE * x,
+                        y: BLOCKSIZE * y,
+                    });
                 }
             }
         }
@@ -46,37 +78,31 @@ export class Graphics {
                     piece.currentShape()[y][x].value === BlockType.Obstructed
                 ) {
                     if (piece instanceof O) {
-                        this.drawSquare(
+                        this.drawTetriminoSquare(
                             {
-                                x:
-                                    BLOCKSIZE * (x + graphicalOffsets.O.x) +
+                                x: BLOCKSIZE * (x + graphicalOffsets.O.x) +
                                     pos.x,
-                                y:
-                                    BLOCKSIZE * (y + graphicalOffsets.O.y) +
+                                y: BLOCKSIZE * (y + graphicalOffsets.O.y) +
                                     pos.y,
                             },
                             piece.currentShape()[y][x].color,
                         );
                     } else if (piece instanceof I) {
-                        this.drawSquare(
+                        this.drawTetriminoSquare(
                             {
-                                x:
-                                    BLOCKSIZE * (x + graphicalOffsets.I.x) +
+                                x: BLOCKSIZE * (x + graphicalOffsets.I.x) +
                                     pos.x,
-                                y:
-                                    BLOCKSIZE * (y + graphicalOffsets.I.y) +
+                                y: BLOCKSIZE * (y + graphicalOffsets.I.y) +
                                     pos.y,
                             },
                             piece.currentShape()[y][x].color,
                         );
                     } else {
-                        this.drawSquare(
+                        this.drawTetriminoSquare(
                             {
-                                x:
-                                    BLOCKSIZE * (x + graphicalOffsets.JLSTZ.x) +
+                                x: BLOCKSIZE * (x + graphicalOffsets.JLSTZ.x) +
                                     pos.x,
-                                y:
-                                    BLOCKSIZE * (y + graphicalOffsets.JLSTZ.y) +
+                                y: BLOCKSIZE * (y + graphicalOffsets.JLSTZ.y) +
                                     pos.y,
                             },
                             piece.currentShape()[y][x].color,
@@ -88,7 +114,6 @@ export class Graphics {
     }
 
     drawPieces(pieces: Piece[]) {
-        console.log(pieces.length);
         for (let i = 0; i < pieces.length; i++) {
             this.drawPiece(pieces[i], { x: 0, y: i * BLOCKSIZE * 3 });
         }

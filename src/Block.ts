@@ -1,5 +1,6 @@
 export enum BlockType {
     Empty,
+    Highlighted,
     Using,
     Obstructed,
 }

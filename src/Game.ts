@@ -1,4 +1,4 @@
-import { MainBoard, HoldBoard, NextBoard } from "./Board";
+import { HoldBoard, MainBoard, NextBoard } from "./Board";
 import { Coordinate } from "./Coordinate";
 import { PieceQueue } from "./PieceQueue";
 import { RotationDirection } from "./RotationDirection";
@@ -17,7 +17,7 @@ export class Game {
     private pieceStartPos: Coordinate = { x: 3, y: 0 };
     private currentPiecePos: Coordinate;
     private pieceQueue: PieceQueue = new PieceQueue();
-    private hasSwitched = false;
+    private hasSwapped = false;
     private interval: number;
     private milisecondsPassed = Date.now();
     private milisecondsTilNextLevel = 30000;
@@ -38,14 +38,17 @@ export class Game {
             this.currentPiecePos,
         );
         this.interval = Math.round(this.getUpdatedInterval());
+        this.mainBoard.setHighlightedDroppedPiece(
+            this.pieceQueue.current(),
+            this.currentPiecePos,
+        );
         this.mainBoard.draw();
         this.update();
         this.addKeyboardInputListener();
     }
 
     private getUpdatedInterval() {
-        const interval =
-            1000 /
+        const interval = 1000 /
             (Math.sqrt(this.level) * 0.7 +
                 0.25 +
                 (this.level * 0.1) ** 2 +
@@ -109,8 +112,12 @@ export class Game {
         this.updateLines(linesCleared);
         this.currentPiecePos = { ...this.pieceStartPos };
         this.pieceQueue.step();
-        this.hasSwitched = false;
+        this.hasSwapped = false;
         this.mainBoard.setPieceInPos(
+            this.pieceQueue.current(),
+            this.currentPiecePos,
+        );
+        this.mainBoard.setHighlightedDroppedPiece(
             this.pieceQueue.current(),
             this.currentPiecePos,
         );
@@ -127,8 +134,17 @@ export class Game {
                 this.pieceQueue.current().currentShape(),
                 newPosition,
             )
-        )
+        ) {
             return;
+        }
+        this.mainBoard.removeHighlightedDroppedPiece(
+            this.pieceQueue.current(),
+            this.currentPiecePos,
+        );
+        this.mainBoard.setHighlightedDroppedPiece(
+            this.pieceQueue.current(),
+            newPosition,
+        );
         this.mainBoard.movePiece(
             this.pieceQueue.current(),
             this.currentPiecePos,
@@ -153,8 +169,9 @@ export class Game {
             event.preventDefault();
             if (event.key === "ArrowDown") {
                 this.lastTime = Date.now();
-                if (this.runGameIteration() === "not obstructed")
+                if (this.runGameIteration() === "not obstructed") {
                     this.updateScore(1);
+                }
             } else if (event.key === "ArrowLeft") {
                 this.moveHorizontal(-1);
             } else if (event.key === "ArrowRight") {
@@ -174,18 +191,28 @@ export class Game {
                 );
                 this.mainBoard.draw();
             } else if (event.key === "c") {
-                if (this.hasSwitched) return;
-                this.mainBoard.removePieceInPos(
+                if (this.hasSwapped) return;
+                this.mainBoard.removeHighlightedDroppedPiece(
+                    this.pieceQueue.current(),
+                    this.currentPiecePos,
+                );
+                this.mainBoard.removeUsingPieceInPos(
                     this.pieceQueue.current(),
                     this.currentPiecePos,
                 );
                 this.pieceQueue.switch();
                 this.currentPiecePos = { ...this.pieceStartPos };
+                this.mainBoard.setHighlightedDroppedPiece(
+                    this.pieceQueue.current(),
+                    this.currentPiecePos,
+                );
                 this.mainBoard.setPieceInPos(
                     this.pieceQueue.current(),
                     this.currentPiecePos,
                 );
-                this.hasSwitched = true;
+
+                this.hasSwapped = true;
+
                 this.mainBoard.draw();
                 this.holdBoard.drawPiece(this.pieceQueue.holding()!);
             } else if (event.key === " ") {

@@ -7,7 +7,7 @@ import { RotationDirection } from "./RotationDirection";
 import { Matrix2d } from "./Matrix2d";
 
 interface PieceAndPos {
-    piece_: Piece;
+    piece: Piece;
     pos: Coordinate;
 }
 
@@ -18,7 +18,6 @@ export abstract class Board {
     constructor(canvas: HTMLCanvasElement, rows: number, cols: number) {
         this.graphics = new Graphics(canvas);
         this.grid = new Matrix2d(rows, cols).grid();
-        console.table(this.grid);
         this.draw();
     }
     draw() {
@@ -41,7 +40,6 @@ export abstract class Board {
 
     setPieceInPos(piece: Piece, pos: Coordinate) {
         let currentGridPos: Block;
-        let gridClone = [...this.grid];
         this.foreachGridPos(piece.currentShape(), (x, y) => {
             currentGridPos = this.getGridPosition({
                 x: pos.x + x,
@@ -52,7 +50,6 @@ export abstract class Board {
                 currentGridPos.color = piece.currentShape()[y][x].color;
             }
         });
-        this.grid = gridClone;
     }
 
     getGridPosition(pos: Coordinate): Block {
@@ -103,14 +100,15 @@ export class MainBoard extends Board {
                     y: pos.y + i,
                 });
 
-                if (currentGridPos.value === BlockType.Using)
+                if (currentGridPos.value === BlockType.Using) {
                     currentGridPos.value = BlockType.Obstructed;
+                }
             }
         }
         return gridClone;
     }
 
-    removePieceInPos(piece: Piece, pos: Coordinate) {
+    removeUsingPieceInPos(piece: Piece, pos: Coordinate) {
         let currentGridPos;
         for (let i = 0; i < piece.currentShape().length; i++) {
             for (let j = 0; j < piece.currentShape()[i].length; j++) {
@@ -118,7 +116,30 @@ export class MainBoard extends Board {
                     x: pos.x + j,
                     y: pos.y + i,
                 });
-                if (piece.currentShape()[i][j].value === BlockType.Using) {
+                if (
+                    piece.currentShape()[i][j].value === BlockType.Using &&
+                    currentGridPos.value === BlockType.Using
+                ) {
+                    currentGridPos.value = BlockType.Empty;
+                    currentGridPos.color = "";
+                }
+            }
+        }
+    }
+
+    removeHighlightedDroppedPiece(piece: Piece, pos: Coordinate) {
+        const droppedPos = this.droppedPiecePos(piece, pos);
+        let currentGridPos;
+        for (let i = 0; i < piece.currentShape().length; i++) {
+            for (let j = 0; j < piece.currentShape()[i].length; j++) {
+                currentGridPos = this.getGridPosition({
+                    x: droppedPos.x + j,
+                    y: droppedPos.y + i,
+                });
+                if (
+                    piece.currentShape()[i][j].value === BlockType.Using &&
+                    currentGridPos.value === BlockType.Highlighted
+                ) {
                     currentGridPos.value = BlockType.Empty;
                     currentGridPos.color = "";
                 }
@@ -127,20 +148,45 @@ export class MainBoard extends Board {
     }
 
     movePiece(piece: Piece, from: Coordinate, to: Coordinate) {
-        this.removePieceInPos(piece, from);
+        this.removeUsingPieceInPos(piece, from);
         this.setPieceInPos(piece, to);
     }
 
     dropPiece(piece: Piece, pos: Coordinate) {
-        let nextPos = { x: pos.x, y: pos.y + 1 };
-        let blocksMoved = 0;
-        while (!this.isUsingPieceObstructed(piece.currentShape(), nextPos)) {
-            this.movePiece(piece, pos, nextPos);
-            pos.y = nextPos.y;
-            nextPos.y++;
-            blocksMoved++;
-        }
+        const newPos = this.droppedPiecePos(piece, pos);
+        this.movePiece(piece, pos, newPos);
+        const blocksMoved = newPos.y - pos.y;
+        pos.y = newPos.y;
         return blocksMoved;
+    }
+
+    droppedPiecePos(piece: Piece, pos: Coordinate) {
+        let currentPos: Coordinate = { x: pos.x, y: pos.y };
+        while (
+            !this.isUsingPieceObstructed(piece.currentShape(), {
+                x: currentPos.x,
+                y: currentPos.y + 1,
+            })
+        ) {
+            currentPos.y++;
+        }
+        return currentPos;
+    }
+
+    setHighlightedDroppedPiece(piece: Piece, pos: Coordinate) {
+        const highlightedPos = this.droppedPiecePos(piece, pos);
+        let currentGridPos: Block;
+        this.foreachGridPos(piece.currentShape(), (x, y) => {
+            currentGridPos = this.getGridPosition({
+                x: highlightedPos.x + x,
+                y: highlightedPos.y + y,
+            });
+
+            if (piece.currentShape()[y][x].value === BlockType.Using) {
+                currentGridPos.value = BlockType.Highlighted;
+                currentGridPos.color = piece.currentShape()[y][x].color;
+            }
+        });
     }
 
     getPosAndPieceAfterWallKickTests(
@@ -178,7 +224,7 @@ export class MainBoard extends Board {
                     ) {
                         return {
                             pos: newPosition,
-                            piece_: piece,
+                            piece: piece,
                         };
                     }
                 }
@@ -189,10 +235,10 @@ export class MainBoard extends Board {
         } else {
             piece.nextRotationClockwise();
         }
-        return { pos: pos, piece_: piece };
+        return { pos: pos, piece: piece };
     }
 
-    private getRotatedPieceAndPos(
+    private rotatedPieceAndPos(
         piece: Piece,
         pos: Coordinate,
         direction: RotationDirection,
@@ -217,20 +263,28 @@ export class MainBoard extends Board {
             );
         }
 
-        return { pos: pos, piece_: piece };
+        return { pos: pos, piece: piece };
     }
 
     rotatePiece(piece: Piece, pos: Coordinate, direction: RotationDirection) {
         if (piece instanceof O) {
             return pos;
         }
-        this.removePieceInPos(piece, pos);
-        const newPieceAndPos = this.getRotatedPieceAndPos(
+        this.removeHighlightedDroppedPiece(
+            piece,
+            this.droppedPiecePos(piece, pos),
+        );
+        this.removeUsingPieceInPos(piece, pos);
+        const newPieceAndPos = this.rotatedPieceAndPos(
             piece,
             pos,
             direction,
         );
-        this.setPieceInPos(newPieceAndPos.piece_, newPieceAndPos.pos);
+        this.setHighlightedDroppedPiece(
+            newPieceAndPos.piece,
+            newPieceAndPos.pos,
+        );
+        this.setPieceInPos(newPieceAndPos.piece, newPieceAndPos.pos);
         return newPieceAndPos.pos;
     }
 
